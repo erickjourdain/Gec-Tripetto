@@ -4,8 +4,8 @@
   "description": "Front end React Material UI pour la qualification des demandes via des formulaires Tripetto",
   "main": "./src/main.tsx",
   "scripts": {
-    "dev": "webpack-dev-server --mode development",
-    "build": "webpack --mode production",
+    "dev": "SET NODE_ENV=development & webpack-dev-server --mode development",
+    "build": "SET NODE_ENV=production & webpack --mode production",
     "format": "prettier --write \"src/**/*.ts*\" \"**/*.json\" \"!package-lock.json\" \"*.yml\" \"webpack.config.js\""
   },
   "keywords": [
@@ -29,11 +29,17 @@
     "@tripetto/runner-classic": "^6.0.1",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
+    "axios": "^1.4.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
+    "dotenv": "^16.3.1",
+    "dotenv-webpack": "^8.0.1",
     "prettier": "^3.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router": "^6.15.0",
+    "react-router-dom": "^6.15.0",
+    "spring-filter-query-builder": "^1.0.0",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.4.4",
     "typescript": "^5.1.6",

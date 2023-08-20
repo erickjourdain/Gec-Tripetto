@@ -19,3 +19,6 @@
 /public/*
 !/public/index.html
 !/public/robots.txt
+
+# production
+.env.production

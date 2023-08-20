@@ -9,7 +9,7 @@
     "newLine": "LF",
     "baseUrl": "./src",
     "jsx": "react-jsx",
-    "lib": ["es6", "dom"],
+    "lib": ["es6", "dom", "DOM.Iterable"],
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
