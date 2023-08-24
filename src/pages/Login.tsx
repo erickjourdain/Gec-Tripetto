@@ -17,6 +17,7 @@ const Login = () => {
     login: "",
     password: "",
   });
+  const [isLoading, setLoading] = useState(false);
 
   // Gestion des mise à jour des champs du formulaire
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -28,10 +29,12 @@ const Login = () => {
 
   // Appel de la requête de connexion à l'API
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
     submit(form, {
       method: "post",
       action: "/login",
+      encType: "application/json",
     });
   };
 
@@ -76,8 +79,8 @@ const Login = () => {
             onChange={handleChange}
           />
           <p>
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Login
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isLoading}>
+              {!isLoading ? "Login" : "Loading ..."}
             </Button>
           </p>
         </Box>

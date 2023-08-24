@@ -22,12 +22,10 @@ const apiRequest = async (payload: AxiosRequestConfig): Promise<any> => {
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
-      const { data } = error.response!;
-      throw new Error(data);
+      throw error.response!;
     } else {
       throw new Error('Erreur serveur');
     }
-
   }
 }
 

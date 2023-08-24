@@ -43,34 +43,30 @@ const rootLoader =
         // aucun token stocké redirection vers la page de login
         return redirect("/login");
       }
-    } else {
-      // récupération du filtre sur les données
-      const url = new URL(request.url);
-      const titre = url.searchParams.get("titre");
-      const page = url.searchParams.get("page");
-      // construction du chemin d'interrogation de l'API
-      const searchParams = titre
-        ? sfAnd([sfEqual("valide", "true"), sfLike("titre", `*${titre}*`)])
-        : sfEqual("valide", "true");
-      // éxécution de la requête de récupération des formulaires à proposer
-      const forms: FormsResponse = await apiRequest({
-        method: "GET",
-        url: `/data/forms?filter=${searchParams}&page=${page || 1}`,
-      });
-      return forms;
     }
+    // récupération du filtre sur les données
+    const url = new URL(request.url);
+    const titre = url.searchParams.get("titre");
+    const page = url.searchParams.get("page");
+    // construction du chemin d'interrogation de l'API
+    const searchParams = titre ? sfAnd([sfEqual("valide", "true"), sfLike("titre", `*${titre}*`)]) : sfEqual("valide", "true");
+    // éxécution de la requête de récupération des formulaires à proposer
+    const forms: FormsResponse = await apiRequest({
+      method: "GET",
+      url: `/data/forms?filter=${searchParams}&page=${page || 1}`,
+    });
+    return forms;
   };
 
-const formLoader =
-  async ({ params }: { params: Params<string> }):Promise<Form | null> => {
-    const form: FormResponse = await apiRequest({
-      method: "GET",
-      url: `data/forms/slug/${params.slug}`,
-    });
-    return {
-      ...form,
-      formulaire: (form.formulaire) ? JSON.parse(form.formulaire) : null,
-    };
+const formLoader = async ({ params }: { params: Params<string> }): Promise<Form | null> => {
+  const form: FormResponse = await apiRequest({
+    method: "GET",
+    url: `data/forms/slug/${params.slug}`,
+  });
+  return {
+    ...form,
+    formulaire: form.formulaire ? JSON.parse(form.formulaire) : null,
   };
+};
 
 export { formLoader, rootLoader };
