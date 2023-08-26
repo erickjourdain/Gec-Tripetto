@@ -4,6 +4,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
+import Settings from "./Settings";
 
 type MenuProps = {
   open?: boolean;
@@ -53,6 +54,7 @@ const Menu = ({ open, drawerwidth, onToggleDrawer }: MenuProps) => {
         <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
           Formulaire Qualification
         </Typography>
+        <Settings />
       </Toolbar>
     </AppBar>
   );

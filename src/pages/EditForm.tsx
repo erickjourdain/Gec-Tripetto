@@ -7,10 +7,11 @@ import Box from "@mui/material/Box";
 import { useAppContext } from "../utils/appContext";
 import { Context } from "../@types/context";
 import { updateForm } from "../utils/apiCall";
-import ChatTripetto from "../components/ChatTripetto";
+import PlayTripetto from "../components/PlayTripetto";
 import FormInputs from "../components/FormInputs";
 import manageError from "../utils/manageError";
 import { useFormulaire } from "./IndexForm";
+
 // définition du type pour les Props du composant
 type EditFormProps = {
   onFinish: () => void;
@@ -37,7 +38,7 @@ const EditForm = ({ onFinish }: EditFormProps) => {
   const navigate = useNavigate();
 
   // récupération du contexte de l'application
-  const { user } = useAppContext() as Context;
+  const { appContext } = useAppContext() as Context;
 
   // récupération du formulaire à mettre à jour via le contexte de la route
   const { form, setForm } = useFormulaire();
@@ -94,7 +95,7 @@ const EditForm = ({ onFinish }: EditFormProps) => {
       }
       if (state.updateFormulaire) {
         value.formulaire = data.formulaire;
-        value.createur = user?.id;
+        value.createur = appContext.user?.id;
       }
       if (!isEmpty(value)) {
         value.id = form.id;
@@ -139,7 +140,15 @@ const EditForm = ({ onFinish }: EditFormProps) => {
             />
           </Box>
         </Paper>
-        {state.testFormulaire && <ChatTripetto form={JSON.parse(state.formulaire)} />}
+        {state.testFormulaire && (
+          <PlayTripetto
+            form={JSON.parse(state.formulaire)}
+            onSubmit={() => {
+              setState({ ...state, testFormulaire: false });
+              return true;
+            }}
+          />
+        )}
       </>
     );
 };

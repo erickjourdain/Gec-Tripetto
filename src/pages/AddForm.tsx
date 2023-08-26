@@ -9,7 +9,7 @@ import { Context } from "../@types/context";
 import { FormCreation } from "../@types/formCreation";
 import { useAppContext } from "../utils/appContext";
 import FormInputs from "../components/FormInputs";
-import ChatTripetto from "../components/ChatTripetto";
+import PlayTripetto from "../components/PlayTripetto";
 import { createForm } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 
@@ -28,7 +28,7 @@ const AddForm = () => {
   const navigate = useNavigate();
 
   // récupération du contexte de l'application
-  const { user } = useAppContext() as Context;
+  const { appContext } = useAppContext() as Context;
 
   // définition de l'état du composant pour gestion de la MAJ des données
   // du formulaire Tripetto
@@ -48,18 +48,17 @@ const AddForm = () => {
       setState({
         ...state,
         error: manageError(error),
-      })
-    }
-  })
+      });
+    },
+  });
 
   // Lancement de l'appel à la requête de mise à jour lors de la validation du formulaire
   const onSubmit = (data: { titre: string; description: string | null; formulaire: string }) => {
-    if (!user) return;
     const value: FormCreation = {
       titre: data.titre,
       description: data.description && !isEmpty(data.description.trim()) ? data.description.trim() : null,
       formulaire: data.formulaire,
-      createur: user.id,
+      createur: appContext?.user?.id || -1,
     };
     mutate(value);
   };
@@ -89,7 +88,15 @@ const AddForm = () => {
           />
         </Box>
       </Paper>
-      {state.testFormulaire && <ChatTripetto form={JSON.parse(state.formulaire)} />}
+      {state.testFormulaire && (
+        <PlayTripetto
+          form={JSON.parse(state.formulaire)}
+          onSubmit={() => {
+            setState({ ...state, testFormulaire: false });
+            return true;
+          }}
+        />
+      )}
     </>
   );
 };

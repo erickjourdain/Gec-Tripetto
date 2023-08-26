@@ -3,9 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
-import Fade from "@mui/material/Fade";
 import CircularProgress from "@mui/material/CircularProgress";
 import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
 import Menu from "../components/Menu";
@@ -31,7 +29,7 @@ const MainBox = styled(Box, {})(() => ({
 
 const Layout = () => {
   // Chargement des données du Contexte de l'application
-  const { user, setUser } = useAppContext() as Context;
+  const { appContext, setAppContext } = useAppContext() as Context;
 
   // Création état local pour affichage du menu latéral
   const [open, setOpen] = useState(true);
@@ -51,7 +49,10 @@ const Layout = () => {
   // Enregistrement des données utilisateurs dans le contexte de l'application
   useEffect(() => {
     if (isSuccess) {
-      setUser(userData.data);
+      setAppContext({
+        ...appContext,
+        user: userData.data,
+      });
     }
   }, [userData]);
 
@@ -79,8 +80,7 @@ const Layout = () => {
               overflow: "auto",
             }}
           >
-            <Toolbar />
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth="lg" sx={{ mt: 10, mb: 4 }}>
               <Outlet />
             </Container>
           </Box>

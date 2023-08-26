@@ -11,9 +11,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { login, setAuthorisation } from "../utils/apiCall";
-import { useAppContext } from "../utils/appContext";
 import manageError from "../utils/manageError";
-import { Context } from "../@types/context";
 
 // Définition du type pour l'état local du composant
 type Status = {
@@ -28,9 +26,6 @@ type Status = {
  * @returns JSX
  */
 const Login = () => {
-  // Chargement des données du Contexte de l'application
-  const { user } = useAppContext() as Context;
-
   // Etat local pour gestion de l'état des requêts de connexion
   const [status, setStatus] = useState<Status>({
     error: null,

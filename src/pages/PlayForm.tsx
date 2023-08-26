@@ -1,4 +1,4 @@
-import ChatTripetto from "../components/ChatTripetto";
+import ChatTripetto from "../components/PlayTripetto";
 import { Form } from "../@types/form";
 import { useOutletContext } from "react-router-dom";
 

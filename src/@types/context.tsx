@@ -1,10 +1,15 @@
 import { User } from "./user";
 
-export type Context = {
+export type ContextType = {
   user: User | null;
-  setUser: SetUserType;
+  runner: string;
 };
 
-export type AppContextType = () => Context | null; 
+export type Context = {
+  appContext: ContextType;
+  setAppContext: SetContextType;
+};
 
-export type SetUserType = (user: User|null) => void
+export type AppContextType = () => Context | null;
+
+export type SetContextType = (appContext: ContextType) => void;

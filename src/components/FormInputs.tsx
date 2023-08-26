@@ -1,6 +1,6 @@
 import Ajv from "ajv";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Stack from "@mui/material/Stack";
@@ -12,7 +12,6 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import ClearIcon from "@mui/icons-material/Clear";
 import ContentPasteGoIcon from "@mui/icons-material/ContentPasteGo";
 import TripettoSchema from "../@types/tripettoSchema.json";
-import { error } from "ajv/dist/vocabularies/applicator/dependencies";
 
 type FormInputsProps = {
   form: {
@@ -52,6 +51,14 @@ const FormInputs = ({ form, onSubmit, onFinish, onUpdateFormulaire, onTestFormul
 
   // définition du texte du bouton de sauvegarde en fonction du contexte
   const btnSauvegarde = onUpdateFormulaire === undefined ? "Enregistrer" : "Mettre à jour";
+
+  // suivi de l'évolution de la props "error"
+  useEffect(() => {
+    if (error) {
+      setError("root", { type: "mutation", message: error });
+    } else clearErrors("root");
+  }, [error]);
+
 
   // validation du formulaire Tripetto
   const validateFormulaire = (value: string) => {
@@ -100,6 +107,7 @@ const FormInputs = ({ form, onSubmit, onFinish, onUpdateFormulaire, onTestFormul
     getValues,
     reset,
     setError,
+    clearErrors
   } = useForm({
     defaultValues: {
       titre: form.titre,
@@ -107,10 +115,6 @@ const FormInputs = ({ form, onSubmit, onFinish, onUpdateFormulaire, onTestFormul
       formulaire: form.formulaire,
     },
   });
-
-  if (error) {
-    setError("root", { type: "mutation", message: error })
-  }
 
   return (
     <>
