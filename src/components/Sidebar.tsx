@@ -1,38 +1,48 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { ChangeEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { styled } from "@mui/material/styles";
 import MuiDrawer, { DrawerProps as MuiDrawerProps } from "@mui/material/Drawer";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-
+import Alert from "@mui/material/Alert";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import AddIcon from "@mui/icons-material/Add";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import EditIcon from "@mui/icons-material/Edit";
-import ListAltIcon from "@mui/icons-material/ListAlt";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-
 import Search from "./Search";
-import { FormsResponse } from "../@types/formsReponse";
+import { getForms } from "../utils/apiCall";
+import manageError from "../utils/manageError";
+import { Form } from "../@types/form";
 
+// Définition du type des "props" attendus par le composant
 type SidebarProps = {
   open?: boolean;
-  forms: FormsResponse;
   drawerwidth: number;
   onToggleDrawer: () => void;
 };
 
+// Définition du type pour l'état local du composant
+type Status = {
+  page: number;
+  titre: string | null;
+  selectedForm: number | null;
+};
+
+// Extension des "props" du composant Drawer pour intégration
+// du statut et de la largeur du composant
 interface DrawerProps extends MuiDrawerProps {
   open?: boolean;
   drawerwidth: number;
 }
 
+// Définition du style du composant Drawer
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
 })<DrawerProps>(({ theme, open, drawerwidth }) => ({
@@ -56,43 +66,59 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-const Sidebar = ({ forms, open, drawerwidth, onToggleDrawer }: SidebarProps) => {
+
+/**
+ * Composant Barre latérale
+ *    - incluant la liste des formulaires avec barre de recherche et pagination
+ *    - bouton d'ajout d'un formulaire
+ *
+ * @returns JSX
+ */
+const Sidebar = ({ open, drawerwidth, onToggleDrawer }: SidebarProps) => {
+  // hook de navigation
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  const nextPage = () => {
-    const page = searchParams.get("page");
-    const updatedSearchParams = new URLSearchParams(searchParams.toString());
-    const newPage = page ? (parseInt(page) + 1).toString() : "2";
-    updatedSearchParams.set("page", newPage);
-    setSearchParams(updatedSearchParams.toString());
-  };
+  // définition état local du composant
+  const [status, setStatus] = useState<Status>({
+    page: 1,
+    titre: null,
+    selectedForm: null,
+  });
 
-  const prevPage = () => {
-    const page = searchParams.get("page");
-    const updatedSearchParams = new URLSearchParams(searchParams.toString());
-    const newPage = page && parseInt(page) > 1 ? (parseInt(page) - 1).toString() : "1";
-    updatedSearchParams.set("page", newPage);
-    setSearchParams(updatedSearchParams.toString());
-  };
+  // query de récupération des formulaires
+  const {
+    isLoading,
+    data: formsData,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["getForms", status.titre, status.page],
+    queryFn: () => getForms(status.titre, status.page),
+  });
 
+  // naviguation vers la page d'ajout d'un formulaire
   const addForm = () => {
-    console.log("hello");
     navigate("/ajouter");
   };
 
-  const editForm = (slug: string) => {
-    navigate(`/formulaire/${slug}/edit`);
+  // mise à jour de valeur de filtrage sur les titres des formulaires
+  const handleTitleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setStatus({
+      ...status,
+      titre: event.currentTarget.value,
+      selectedForm: null,
+    });
   };
 
-  const playForm = (slug: string) => {
-    navigate(`/formulaire/${slug}`);
-  };
+  // affichage erreur en cas d'erreur de chargement des formulaires
+  if (isError)
+    return (
+      <Alert variant="filled" severity="error">
+        {manageError(error)}
+      </Alert>
+    );
 
-  const resForm = (slug: string) => {
-    navigate(`/formulaire/${slug}/data`);
-  };
-
+  // définition du composant
   return (
     <Drawer variant="permanent" open={open} drawerwidth={drawerwidth}>
       <Toolbar
@@ -103,7 +129,7 @@ const Sidebar = ({ forms, open, drawerwidth, onToggleDrawer }: SidebarProps) => 
           px: [1],
         }}
       >
-        <Search />
+        <Search onChange={handleTitleChange} loading={isLoading} />
         <IconButton aria-label="ajouter formulaire" onClick={addForm}>
           <AddIcon fontSize="small" />
         </IconButton>
@@ -113,31 +139,23 @@ const Sidebar = ({ forms, open, drawerwidth, onToggleDrawer }: SidebarProps) => 
       </Toolbar>
       <Divider />
       <List>
-        {forms && forms.data.length ? (
+        {formsData && formsData.data.data.length > 0 ? (
           <>
-            {forms.data.map((form) => (
-              <ListItem
+            {formsData.data.data.map((form: Form, ind: number) => (
+              <ListItemButton
                 key={form.id}
-                secondaryAction={
-                  <>
-                    <IconButton edge="end" aria-label="start" onClick={() => playForm(form.slug)}>
-                      <PlayArrowIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton edge="end" aria-label="result" onClick={() => resForm(form.slug)}>
-                      <ListAltIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton edge="end" aria-label="edit" onClick={() => editForm(form.slug)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </>
-                }
+                selected={ind === status.selectedForm}
+                onClick={() => {
+                  setStatus({ ...status, selectedForm: ind });
+                  navigate(`/formulaire/${form.slug}`);
+                }}
               >
                 <ListItemText primary={form.titre} />
-              </ListItem>
+              </ListItemButton>
             ))}
           </>
         ) : (
-          <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+          <Typography color="inherit" noWrap sx={{ flexGrow: 1 }}>
             Aucun formulaire trouvé
           </Typography>
         )}
@@ -148,10 +166,30 @@ const Sidebar = ({ forms, open, drawerwidth, onToggleDrawer }: SidebarProps) => 
           justifyContent: "center",
         }}
       >
-        <IconButton color="primary" disabled={!forms.hasPrevious} onClick={prevPage}>
+        <IconButton
+          color="primary"
+          disabled={!formsData || !formsData.data.hasPrevious}
+          onClick={() =>
+            setStatus({
+              ...status,
+              page: status.page - 1,
+              selectedForm: null,
+            })
+          }
+        >
           <KeyboardDoubleArrowLeftIcon />
         </IconButton>
-        <IconButton color="primary" disabled={!forms.hasNext} onClick={nextPage}>
+        <IconButton
+          color="primary"
+          disabled={!formsData || !formsData.data.hasNext}
+          onClick={() =>
+            setStatus({
+              ...status,
+              page: status.page + 1,
+              selectedForm: null,
+            })
+          }
+        >
           <KeyboardDoubleArrowRightIcon />
         </IconButton>
       </Box>

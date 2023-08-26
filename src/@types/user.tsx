@@ -5,6 +5,6 @@ export type User = {
   login: string;
   password?: string;
   role: ['ADMIN', 'USER'];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }

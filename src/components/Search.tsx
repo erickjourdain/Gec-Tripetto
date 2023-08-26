@@ -1,34 +1,24 @@
-import { useNavigation } from "react-router";
-import { Form, useSubmit } from "react-router-dom";
+import { ChangeEvent } from "react";
 import Input from "@mui/material/Input";
 import InputAdornment from "@mui/material/InputAdornment";
-
 import SearchIcon from "@mui/icons-material/Search";
 import SyncIcon from "@mui/icons-material/Sync";
 
-const Search = () => {
-  const navigation = useNavigation();
-  const submit = useSubmit();
+type SearcProps = {
+  onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  loading: boolean;
+};
 
-  const form = "";
-  const searching = navigation.location && new URLSearchParams(navigation.location.search).has("titre");
-
+const Search = ({onChange, loading}: SearcProps) => {
   return (
-    <Form role="search">
-      <Input
-        id="input-search"
-        aria-label="Recherche formulaire"
-        name="titre"
-        startAdornment={<InputAdornment position="start">{searching ? <SyncIcon /> : <SearchIcon />}</InputAdornment>}
-        placeholder="recherche"
-        onChange={(event) => {
-          const isFirstSearch = form == null;
-          submit(event.currentTarget.form, {
-            replace: !isFirstSearch,
-          });
-        }}
-      />
-    </Form>
+    <Input
+      id="input-search"
+      aria-label="Recherche formulaire"
+      name="titre"
+      startAdornment={<InputAdornment position="start">{loading ? <SyncIcon /> : <SearchIcon />}</InputAdornment>}
+      placeholder="recherche"
+      onChange={ onChange }
+    />
   );
 };
 

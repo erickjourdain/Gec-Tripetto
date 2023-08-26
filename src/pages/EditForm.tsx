@@ -1,38 +1,46 @@
 import { isEmpty } from "lodash";
 import { useState } from "react";
-import { useOutletContext, useParams } from "react-router";
-import { useSubmit } from "react-router-dom";
+import { useNavigate } from "react-router";
+import { useMutation } from "@tanstack/react-query";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { useAppContext } from "../utils/appContext";
-import { Form } from "../@types/form";
 import { Context } from "../@types/context";
+import { updateForm } from "../utils/apiCall";
 import ChatTripetto from "../components/ChatTripetto";
 import FormInputs from "../components/FormInputs";
+import manageError from "../utils/manageError";
+import { useFormulaire } from "./IndexForm";
+// définition du type pour les Props du composant
+type EditFormProps = {
+  onFinish: () => void;
+};
 
-const EditForm = () => {
-  // définition du type pour la mise à jour des données
-  type UpdateFormValues = {
-    id?: number;
-    titre?: string;
-    description?: string | null;
-    formulaire?: string | null;
-    createur?: number;
-  };
+// définition du type pour la mise à jour des données
+type UpdateFormValues = {
+  id?: number;
+  titre?: string;
+  description?: string | null;
+  formulaire?: string;
+  createur?: number;
+};
 
-  // définition du type pour la gestion de l'état local
-  type State = {
-    updateFormulaire: boolean;
-    testFormulaire: boolean;
-    formulaire: string;
-    error: string | null;
-  };
+// définition du type pour la gestion de l'état local
+type State = {
+  updateFormulaire: boolean;
+  testFormulaire: boolean;
+  formulaire: string;
+  error: string | null;
+};
+
+const EditForm = ({ onFinish }: EditFormProps) => {
+  const navigate = useNavigate();
 
   // récupération du contexte de l'application
   const { user } = useAppContext() as Context;
+
   // récupération du formulaire à mettre à jour via le contexte de la route
-  const form = useOutletContext() as Form;
+  const { form, setForm } = useFormulaire();
 
   // définition de l'état du composant pour gestion de la MAJ des données
   // du formulaire Tripetto
@@ -42,85 +50,98 @@ const EditForm = () => {
     formulaire: "",
     error: null,
   });
-  const submit = useSubmit();
-  const params = useParams();
 
-  // Lancement de l'appel à la requête de mise à jour lors de la validation du formulaire
-  const onSubmit = (data: { titre: string; description: string | null | undefined; formulaire: string | null | undefined }) => {
-    // définition des champs à mettre à jour
-    const value: UpdateFormValues = {};
-    if (data.titre.trim() !== form.titre.trim()) value.titre = data.titre;
-    switch (data.description) {
-      case undefined:
-      case null:
-        if (form.description !== null) value.description = null;
-        break;
-      default:
-        const description = data.description.trim();
-        if (description !== form.description?.trim()) {
-          if (!isEmpty(description)) value.description = data.description;
-          else value.description = null;
-        }
-        break;
-    }
-    if (state.updateFormulaire) {
-      value.formulaire = data.formulaire;
-      value.createur = user?.id;
-    }
-    if (!isEmpty(value)) {
-      value.id = form.id;
-      submit(value, {
-        method: "PATCH",
-        action: `/formulaire/${params.slug}/edit`,
-        encType: "application/json",
-      });
-    } else {
+  // définition de la requête de mise à jour du formulaire
+  const { mutate } = useMutation({
+    mutationFn: updateForm,
+    onSuccess: (response) => {
+      if (form && form.slug !== response.data.slug) {
+        navigate(`/formulaire/${response.data.slug}`);
+      } else {
+        setForm({
+          ...response.data,
+          formulaire: response.data ? JSON.parse(response.data.formulaire) : {},
+        });
+        onFinish();
+      }
+    },
+    onError: (error) => {
       setState({
         ...state,
-        error: "aucune donnée n'a été modifiée",
+        error: manageError(error),
       });
-      setTimeout(() => {
-        setState({
-          ...state,
-          error: null,
-        });
-      }, 2500);
+    },
+  });
+
+  // Lancement de l'appel à la requête de mise à jour lors de la validation du formulaire
+  const onSubmit = (data: { titre: string; description: string | null; formulaire: string }) => {
+    if (form) {
+      // définition des champs à mettre à jour
+      const value: UpdateFormValues = {};
+      if (data.titre.trim() !== form.titre?.trim()) value.titre = data.titre;
+      switch (data.description) {
+        case undefined:
+        case null:
+          if (form.description !== null) value.description = null;
+          break;
+        default:
+          const description = data.description.trim();
+          if (description !== form.description?.trim()) {
+            if (!isEmpty(description)) value.description = data.description;
+            else value.description = null;
+          }
+          break;
+      }
+      if (state.updateFormulaire) {
+        value.formulaire = data.formulaire;
+        value.createur = user?.id;
+      }
+      if (!isEmpty(value)) {
+        value.id = form.id;
+        mutate(value);
+      } else {
+        onFinish();
+      }
     }
   };
 
-  return (
-    <>
-      <Paper>
-        <Box px={3} py={2}>
-          <Typography variant="h6" align="center" margin="dense">
-            Mise à jour du formulaire: <b>{form.titre}</b>
-          </Typography>
-          <FormInputs form={
-            {
-              titre: form.titre,
-              description: form.description,
-              formulaire: JSON.stringify(form.formulaire)
-            }}
-            onSubmit={onSubmit}
-            onUpdateFormulaire={(val: boolean) => {
-              setState({
-                ...state,
-                updateFormulaire: val
-              })
-            }}
-            onTestFormulaire={(val: string) => {
-              setState({
-                ...state,
-                testFormulaire: true,
-                formulaire: val,
-              });
-            }}
-          />
-        </Box>
-      </Paper>
-      {state.testFormulaire && <ChatTripetto form={JSON.parse(state.formulaire)} />}
-    </>
-  );
+  if (form)
+    return (
+      <>
+        <Paper
+          sx={{
+            marginTop: "10px",
+          }}
+        >
+          <Box px={3} py={2}>
+            <FormInputs
+              form={{
+                titre: form.titre,
+                description: form.description,
+                formulaire: JSON.stringify(form.formulaire),
+              }}
+              onSubmit={onSubmit}
+              onFinish={onFinish}
+              onUpdateFormulaire={(val: boolean) => {
+                setState({
+                  ...state,
+                  updateFormulaire: val,
+                });
+              }}
+              onTestFormulaire={(val: string) => {
+                setState({
+                  ...state,
+                  testFormulaire: true,
+                  formulaire: val,
+                });
+              }}
+              error={state.error}
+            />
+          </Box>
+        </Paper>
+        {state.testFormulaire && <ChatTripetto form={JSON.parse(state.formulaire)} />}
+      </>
+    );
 };
 
 export default EditForm;

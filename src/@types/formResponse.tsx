@@ -2,7 +2,7 @@
 import { User } from "./user";
 
 export type FormResponse = {
-  id?: number;
+  id: number;
   titre: string;
   slug: string;
   description: string | null;
@@ -10,6 +10,6 @@ export type FormResponse = {
   createur?: User;
   valide: boolean;
   version: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
 }
