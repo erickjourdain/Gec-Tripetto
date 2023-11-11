@@ -1,5 +1,10 @@
 import { AxiosError } from "axios";
 
+/**
+ * Définir le message d'erreur à afficher à l'écran
+ * @param error
+ * @returns string message d'erreur
+ */
 const manageError = (error: Error | AxiosError | unknown) : string => {
   console.log(error)
   if (error instanceof AxiosError) {

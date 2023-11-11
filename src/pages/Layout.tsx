@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import CircularProgress from "@mui/material/CircularProgress";
 import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
 import Menu from "../components/Menu";
 import Sidebar from "../components/Sidebar";
@@ -39,11 +38,12 @@ const Layout = () => {
     isLoading,
     data: userData,
     isError,
-    isSuccess
+    isSuccess,
   } = useQuery({
     queryKey: ["getCurrentUser"],
     queryFn: getCurrentUser,
     retry: false,
+    staleTime: Infinity,
   });
 
   // Enregistrement des données utilisateurs dans le contexte de l'application
@@ -90,7 +90,6 @@ const Layout = () => {
   else return (
     <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
       <Typography variant="h5">Chargement en cours....</Typography>
-      <CircularProgress />
     </Box>
   );
 };

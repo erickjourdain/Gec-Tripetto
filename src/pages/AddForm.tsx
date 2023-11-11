@@ -57,8 +57,7 @@ const AddForm = () => {
     const value: FormCreation = {
       titre: data.titre,
       description: data.description && !isEmpty(data.description.trim()) ? data.description.trim() : null,
-      formulaire: data.formulaire,
-      createur: appContext?.user?.id || -1,
+      formulaire: data.formulaire
     };
     mutate(value);
   };

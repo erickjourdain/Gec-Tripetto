@@ -1,15 +1,15 @@
 
 import { User } from "./user";
 
-export type FormResponse = {
+export type FormAPI = {
   id: number;
   titre: string;
   slug: string;
   description: string | null;
-  formulaire?: string;
-  createur?: User;
+  formulaire: string;
+  createur: User;
   valide: boolean;
   version: number;
-  createdAt?: string;
-  updatedAt?: string;
-}
+  createdAt?: number;
+  updatedAt?: number;
+};

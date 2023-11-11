@@ -106,6 +106,7 @@ const Sidebar = ({ open, drawerwidth, onToggleDrawer }: SidebarProps) => {
     setStatus({
       ...status,
       titre: event.currentTarget.value,
+      page: 1,
       selectedForm: null,
     });
   };

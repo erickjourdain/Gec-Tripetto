@@ -10,6 +10,6 @@ export type Form = {
   createur?: User;
   valide: boolean;
   version: number;
-  createdAt?: string;
-  updatedAt?: string;
-}
+  createdAt?: number;
+  updatedAt?: number;
+};

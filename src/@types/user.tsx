@@ -1,10 +1,12 @@
+export type Role = "ADMIN" | "USER"
+
 export type User = {
   id: number;
   nom: string;
   prenom: string;
   login: string;
   password?: string;
-  role: ['ADMIN', 'USER'];
+  role: Role;
   createdAt: string;
   updatedAt: string;
 }

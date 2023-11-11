@@ -4,18 +4,11 @@ import { useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import { useAppContext } from "../utils/appContext";
-import { Context } from "../@types/context";
 import { updateForm } from "../utils/apiCall";
-import PlayTripetto from "../components/PlayTripetto";
-import FormInputs from "../components/FormInputs";
+import PlayTripetto from "./PlayTripetto";
+import FormInputs from "./FormInputs";
 import manageError from "../utils/manageError";
-import { useFormulaire } from "./IndexForm";
-
-// définition du type pour les Props du composant
-type EditFormProps = {
-  onFinish: () => void;
-};
+import { useFormulaire } from "../pages/IndexForm";
 
 // définition du type pour la mise à jour des données
 type UpdateFormValues = {
@@ -23,7 +16,6 @@ type UpdateFormValues = {
   titre?: string;
   description?: string | null;
   formulaire?: string;
-  createur?: number;
 };
 
 // définition du type pour la gestion de l'état local
@@ -34,11 +26,9 @@ type State = {
   error: string | null;
 };
 
-const EditForm = ({ onFinish }: EditFormProps) => {
+//const EditForm = ({ onFinish }: EditFormProps) => {
+const EditForm = () => {
   const navigate = useNavigate();
-
-  // récupération du contexte de l'application
-  const { appContext } = useAppContext() as Context;
 
   // récupération du formulaire à mettre à jour via le contexte de la route
   const { form, setForm } = useFormulaire();
@@ -63,7 +53,7 @@ const EditForm = ({ onFinish }: EditFormProps) => {
           ...response.data,
           formulaire: response.data ? JSON.parse(response.data.formulaire) : {},
         });
-        onFinish();
+        navigate({ pathname: "../" });
       }
     },
     onError: (error) => {
@@ -95,13 +85,12 @@ const EditForm = ({ onFinish }: EditFormProps) => {
       }
       if (state.updateFormulaire) {
         value.formulaire = data.formulaire;
-        value.createur = appContext.user?.id;
       }
       if (!isEmpty(value)) {
         value.id = form.id;
         mutate(value);
       } else {
-        onFinish();
+        navigate({ pathname: "../" });
       }
     }
   };
@@ -122,7 +111,7 @@ const EditForm = ({ onFinish }: EditFormProps) => {
                 formulaire: JSON.stringify(form.formulaire),
               }}
               onSubmit={onSubmit}
-              onFinish={onFinish}
+              onFinish={() => navigate({ pathname: "../" }) }
               onUpdateFormulaire={(val: boolean) => {
                 setState({
                   ...state,

@@ -2,9 +2,11 @@ import { useState, MouseEvent } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import IconButton from "@mui/material/IconButton";
-import SettingsIcon from "@mui/icons-material/Settings";
 import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { useAppContext } from "../utils/appContext";
+import { isAdmin } from "../utils/auth"
 import { Context } from "../@types/context";
 
 const options = ["Classic", "Autoscroll", "Chat"];
@@ -66,6 +68,12 @@ const Settings = () => {
             </MenuItem>
           );
         })}
+        {isAdmin() &&
+          [
+            <Divider key="divider"/>,
+            <MenuItem key="admin">Administration</MenuItem>
+          ]
+        }
       </Menu>
     </Box>
   );
