@@ -41,7 +41,8 @@ const ResultForm = ({ answer }: ResultFormProps) => {
     error,
   } = useQuery({
     queryKey: ["getAnswer", answer],
-    queryFn: () => getAnswer(answer.toString()),
+    queryFn: () => getAnswer(answer, null),
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

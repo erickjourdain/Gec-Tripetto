@@ -94,6 +94,7 @@ const Sidebar = ({ open, drawerwidth, onToggleDrawer }: SidebarProps) => {
   } = useQuery({
     queryKey: ["getForms", status.titre, status.page],
     queryFn: () => getForms(status.titre, status.page),
+    refetchOnWindowFocus: false,
   });
 
   // naviguation vers la page d'ajout d'un formulaire

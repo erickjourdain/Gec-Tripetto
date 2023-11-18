@@ -6,6 +6,11 @@ const isAdmin = () => {
   return appContext.user?.role === "ADMIN";
 }
 
+const isContributeur = () => {
+  const { appContext } = useAppContext() as Context;
+  return appContext.user?.role === "ADMIN" || appContext.user?.role === "CONTRIBUTEUR";
+}
+
 const isLogged = () => {
   const { appContext } = useAppContext() as Context;
   return !appContext.user
@@ -13,5 +18,6 @@ const isLogged = () => {
 
 export {
   isAdmin,
-  isLogged
+  isContributeur,
+  isLogged,
 }

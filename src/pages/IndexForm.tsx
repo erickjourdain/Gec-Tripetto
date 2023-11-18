@@ -34,6 +34,7 @@ const IndexForm = () => {
   } = useQuery({
     queryKey: ["getForm", slug],
     queryFn: () => getForm(slug),
+    refetchOnWindowFocus: false,
   });
 
   // mise à jour des données suite modification des données du formulaire

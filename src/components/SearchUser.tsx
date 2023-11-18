@@ -26,6 +26,7 @@ const SearchUser = ({ onUserChange }: SearchUserProps) => {
     queryKey: ["getUsers"],
     queryFn: () => getUsers(search),
     enabled: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

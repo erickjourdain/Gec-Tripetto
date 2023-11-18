@@ -12,11 +12,12 @@ import IndexForm from "./pages/IndexForm";
 import AddForm from "./pages/AddForm";
 import Error from "./components/Error";
 //import InfoForm from "./pages/InfoForm";
-import ReponsePage from "./pages/ReponsePage";
+//import ReponsePage from "./pages/ReponsePage";
 import EditForm from "./components/EditForm";
 import PlayForm from "./components/PlayForm";
 import ResultsForm from "./components/ResultsForm";
 import NotAllowed from "./components/NotAllowed";
+import IndexReponse from "./pages/IndexReponse";
 
 // création d'un instance de QueryClient
 const queryClient = new QueryClient({});
@@ -61,8 +62,14 @@ function App() {
               element: <ResultsForm />,
             },
             {
-              path: "answers/:uuid",
-              element: <ReponsePage />,
+              path: "answers/:uuid/:version",
+              element: <IndexReponse />,
+              /*children: [
+                {
+                  path: ":version",
+                  element: <ReponsePage />
+                }
+              ]*/
             },
           ],
         },

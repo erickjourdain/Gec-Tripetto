@@ -44,6 +44,7 @@ const Layout = () => {
     queryFn: getCurrentUser,
     retry: false,
     staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
 
   // Enregistrement des données utilisateurs dans le contexte de l'application

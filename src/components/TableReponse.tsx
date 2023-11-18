@@ -21,6 +21,7 @@ const TableReponse = ({ form, reponses }: TableReponseProps) => {
   const [page, setPage] = useState(0);
   const [formAnswers, setFormAnswers] = useState<FormAnswers[][]>([]);
 
+  // Remise à jour des données suite changement des props
   useEffect(() => {
     setFormAnswers([]);
     const answers: FormAnswers[][] = [];

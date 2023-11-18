@@ -13,12 +13,12 @@ import TableBody from "@mui/material/TableBody";
 import CircularProgress from "@mui/material/CircularProgress";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useFormulaire } from "../pages/IndexForm";
-import SearchUser from "./SearchUser";
 import manageError from "../utils/manageError";
 import { getAnswers } from "../utils/apiCall";
 import { formatDateTime } from "../utils/format";
 import { User } from "../@types/user";
 import { AnswerAPI } from "../@types/answerAPI";
+import SearchUser from "./SearchUser";
 
 /**
  * Composant de présentation des résultats d'un formulaire
@@ -38,13 +38,14 @@ const ResultsForm = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ["getAnswers", user],
+    queryKey: ["getAnswersTable", user],
     queryFn: () => {
       let query = user
         ? sfAnd([sfEqual("courante", "true"), sfEqual("formulaire", form?.id || 0), sfEqual("createur", user.id)])
         : sfAnd([sfEqual("courante", "true"), sfEqual("formulaire", form?.id || 0)]);
       return getAnswers(`filter=${query.toString()}&page=1`);
     },
+    refetchOnWindowFocus: false,
   });
 
   // mise à jour de l'utilisateur sélectionné
@@ -93,7 +94,7 @@ const ResultsForm = () => {
               reponses.data.data.map((reponse: AnswerAPI) => (
                 <TableRow key={reponse.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                   <TableCell>
-                    <VisibilityIcon sx={{ cursor: "pointer" }} onClick={() => navigate({ pathname: reponse.uuid }, {state: { version: reponse.version }})} />
+                    <VisibilityIcon sx={{ cursor: "pointer" }} onClick={() => navigate({ pathname: `${reponse.uuid}/${reponse.version}` })} />
                   </TableCell>
                   <TableCell component="th" scope="row">
                     {reponse.createur.nom} {reponse.createur.prenom}

@@ -106,10 +106,11 @@ const getAnswers = (query: string) => {
   });
 };
 
-const getAnswer = (id: string | undefined) => {
+const getAnswer = (id: number, query: string | null) => {
+  const url = query ? `data/answers/${id}?${query}` : `data/answers/${id}`;
   return instance.request({
     method: "GET",
-    url: `data/answers/${id ? parseInt(id) : 0}`,
+    url,
   });
 };
 

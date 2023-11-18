@@ -59,9 +59,7 @@ const PlayForm = () => {
   const save = () => {
     mutate({
       reponse: JSON.stringify(reponses),
-      //donnees: JSON.stringify(values),
       formulaire: form ? form.id : 0,
-      //createur: appContext.user ? appContext.user.id : 0,
     });
   };
 
