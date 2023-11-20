@@ -4,12 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { sfAnd, sfEqual } from "spring-filter-query-builder";
 import Paper from "@mui/material/Paper";
 import Skeleton from "@mui/material/Skeleton";
+import Box from "@mui/material/Box";
 import { AnswerAPI } from "../@types/answerAPI";
 import { getAnswers } from "../utils/apiCall";
 import Createur from "../components/reponses/Createur";
 import Versions from "../components/reponses/Versions";
 import UpdateForm from "../components/reponses/UpdateForm";
 import ErrorAlert from "../components/ErrorAlert";
+import ExportExcel from "../components/reponses/ExportExcel";
 
 const IndexReponse = () => {
   const navigate = useNavigate();
@@ -36,6 +38,11 @@ const IndexReponse = () => {
     if (data && isSuccess) setReponse(data.data.data[0]);
   }, [data]);
 
+  const handleUpdated = (ver: number) => {
+    if (ver.toString() !== version) handleVersionChange(ver.toString());
+    else refetch();
+  };
+
   if (isLoading)
     return (
       <>
@@ -58,8 +65,11 @@ const IndexReponse = () => {
         }}
       >
         <Createur />
-        <Versions version={version} onVersionChange={handleVersionChange} />
-        <UpdateForm courante={reponse.courante} answer={reponse} onUpdated={refetch}/>
+        <Box display="flex" justifyContent="flex-end" alignItems="center" sx={{ mb: 1 }}>
+          <Versions version={version} onVersionChange={handleVersionChange}/>
+          <ExportExcel />
+        </Box>
+        <UpdateForm courante={reponse.courante} answer={reponse} onUpdated={(ver: number) => handleUpdated(ver)} />
       </Paper>
     );
 };

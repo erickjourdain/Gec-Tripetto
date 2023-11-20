@@ -30,7 +30,7 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
   const [versions, setVersions] = useState<Version[]>([]);
 
   // query récupération des versions existantes de la réponse
-  const { data, error, isError, isLoading, isSuccess } = useQuery({
+  const { data, error, isError, isLoading, isSuccess, remove } = useQuery({
     queryKey: ["getAnswersVersion", uuid],
     queryFn: () => {
       if (uuid === undefined) return Promise.resolve(null);
@@ -45,6 +45,10 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
   useEffect(() => {
     if (isSuccess && data) setVersions(data.data.data);
   }, [data]);
+  // suppression de la requête de la mémoire lors du "démontage" du composant
+  useEffect(() => {
+    return () => remove();
+  },[])
 
   if (isLoading)
     return (
@@ -57,8 +61,7 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
 
   if (isSuccess && versions.length > 0)
     return (
-      <Box display="flex" justifyContent="flex-end">
-        <FormControl sx={{ minWidth: 100 }} size="small">
+        <FormControl sx={{ minWidth: 100, pr: 1 }} size="small">
           <InputLabel id="reponse-versions-select-label">Version</InputLabel>
           <Select
             labelId="reponse-versions-select-label"
@@ -76,7 +79,6 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
             ))}
           </Select>
         </FormControl>
-      </Box>
     );
 };
 

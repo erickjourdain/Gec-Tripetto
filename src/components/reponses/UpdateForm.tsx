@@ -14,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Alert from "@mui/material/Alert";
+import ChangeCircleOutlinedIcon from "@mui/icons-material/ChangeCircleOutlined";
 import { AnswerAPI } from "../../@types/answerAPI";
 import { AnwserUpdate } from "../../@types/answerUpdate";
 import { updateAnswer } from "../../utils/apiCall";
@@ -36,7 +37,7 @@ interface IFormInputs {
 interface UpdateFormProps {
   courante: boolean;
   answer: AnswerAPI;
-  onUpdated: () => void;
+  onUpdated: (version: number) => void;
 }
 
 const UpdateForm = ({ courante, answer, onUpdated }: UpdateFormProps) => {
@@ -50,9 +51,9 @@ const UpdateForm = ({ courante, answer, onUpdated }: UpdateFormProps) => {
   // query de mutation des données
   const { mutate } = useMutation({
     mutationFn: updateAnswer,
-    onSuccess: () => {
+    onSuccess: (rep) => {
       setMutation(false);
-      onUpdated();
+      onUpdated(rep.data.version);
     },
   });
 
@@ -120,6 +121,7 @@ const UpdateForm = ({ courante, answer, onUpdated }: UpdateFormProps) => {
     }
   };
 
+  // Modification des données du formulaire
   const isChanged = () => {
     if (
       answer.statut !== getValues("statut") ||
@@ -200,11 +202,12 @@ const UpdateForm = ({ courante, answer, onUpdated }: UpdateFormProps) => {
           </Typography>
         </Box>
         {courante && isContributeur() && (
-          <Box display="flex" justifyContent="flex-end">
+          <Box>
             <Button
               disabled={!answer?.courante || modification}
-              variant="contained"
+              variant="outlined"
               color="secondary"
+              endIcon={<ChangeCircleOutlinedIcon/>}
               onClick={() => {
                 setModification(true);
               }}
