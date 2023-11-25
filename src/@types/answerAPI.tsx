@@ -13,6 +13,8 @@ export type AnswerAPI = {
   statut: string;
   version: number;
   courante: boolean;
+  utilisateur?: User;
+  lockedAt?: number;
   createdAt?: number;
   updatedAt?: number;
 };

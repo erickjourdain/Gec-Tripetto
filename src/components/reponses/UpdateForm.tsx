@@ -19,7 +19,7 @@ import { AnswerAPI } from "../../@types/answerAPI";
 import { AnwserUpdate } from "../../@types/answerUpdate";
 import { updateAnswer } from "../../utils/apiCall";
 import { formatDateTime } from "../../utils/format";
-import { isContributeur } from "../../utils/auth";
+import { isContributor } from "../../utils/auth";
 import TableReponse from "../TableReponse";
 import PlayTripetto from "../PlayTripetto";
 
@@ -36,13 +36,13 @@ interface IFormInputs {
 
 interface UpdateFormProps {
   courante: boolean;
+  locked: boolean;
   answer: AnswerAPI;
   onUpdated: (version: number) => void;
 }
 
-const UpdateForm = ({ courante, answer, onUpdated }: UpdateFormProps) => {
-  const statuts = ["BROUILLON", "QUALIFICATION", "DEVIS", "GAGNE", "PERDU"];
-  const { slug, uuid, version } = useParams();
+const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) => {
+  const statuts = ["BROUILLON", "QUALIFICATION", "DEVIS", "GAGNE", "PERDU", "TERMINE"];
 
   const [modification, setModification] = useState<boolean>(false);
   const [reponses, setReponses] = useState<string[]>([]);
@@ -157,7 +157,7 @@ const UpdateForm = ({ courante, answer, onUpdated }: UpdateFormProps) => {
                       id="statut-select"
                       labelId="statut-select-label"
                       label="statut"
-                      disabled={!courante || !isContributeur()}
+                      disabled={!courante || !isContributor() || locked}
                       {...field}
                     >
                       {statuts.map((st) => (
@@ -177,7 +177,7 @@ const UpdateForm = ({ courante, answer, onUpdated }: UpdateFormProps) => {
             InputProps={{
               startAdornment: <InputAdornment position="start">DEM</InputAdornment>,
             }}
-            disabled={!courante || !isContributeur()}
+            disabled={!courante || !isContributor() || locked}
             {...register("demande", { pattern: { value: /^[0-9]{6,6}$/g, message: "La demande doit comporter 6 chiffres" } })}
             error={errors.demande ? true : false}
           />
@@ -187,7 +187,7 @@ const UpdateForm = ({ courante, answer, onUpdated }: UpdateFormProps) => {
             InputProps={{
               startAdornment: <InputAdornment position="start">OPP</InputAdornment>,
             }}
-            disabled={!courante || !isContributeur()}
+            disabled={!courante || !isContributor() || locked}
             {...register("opportunite", { pattern: { value: /^[0-9]{6,6}$/g, message: "L'opportunité doit comporter 6 chiffres" } })}
             error={errors.opportunite ? true : false}
           />
@@ -201,13 +201,13 @@ const UpdateForm = ({ courante, answer, onUpdated }: UpdateFormProps) => {
             {errors.opportunite?.message}
           </Typography>
         </Box>
-        {courante && isContributeur() && (
+        {(courante || isContributor()) && !locked && (
           <Box>
             <Button
               disabled={!answer?.courante || modification}
               variant="outlined"
               color="secondary"
-              endIcon={<ChangeCircleOutlinedIcon/>}
+              endIcon={<ChangeCircleOutlinedIcon />}
               onClick={() => {
                 setModification(true);
               }}
@@ -226,7 +226,7 @@ const UpdateForm = ({ courante, answer, onUpdated }: UpdateFormProps) => {
             />
           </div>
         )}
-        {(courante && isContributeur()) && (
+        {(courante || isContributor()) && !locked && (
           <Box mt={3}>
             <Stack spacing={2} direction="row">
               <Button variant="contained" color="primary" disabled={!isValid || !isChanged() || mutation} onClick={handleSubmit}>

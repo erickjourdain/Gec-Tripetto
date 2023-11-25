@@ -17,9 +17,10 @@ import AddIcon from "@mui/icons-material/Add";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import Search from "./Search";
+import { Form } from "../@types/form";
 import { getForms } from "../utils/apiCall";
 import manageError from "../utils/manageError";
-import { Form } from "../@types/form";
+import { isCreator } from "../utils/auth";
 
 // Définition du type des "props" attendus par le composant
 type SidebarProps = {
@@ -65,7 +66,6 @@ const Drawer = styled(MuiDrawer, {
     }),
   },
 }));
-
 
 /**
  * Composant Barre latérale
@@ -132,9 +132,11 @@ const Sidebar = ({ open, drawerwidth, onToggleDrawer }: SidebarProps) => {
         }}
       >
         <Search onChange={handleTitleChange} loading={isLoading} />
-        <IconButton aria-label="ajouter formulaire" onClick={addForm}>
-          <AddIcon fontSize="small" />
-        </IconButton>
+        {isCreator() && (
+          <IconButton aria-label="ajouter formulaire" onClick={addForm}>
+            <AddIcon fontSize="small" />
+          </IconButton>
+        )}
         <IconButton onClick={onToggleDrawer}>
           <ChevronLeftIcon />
         </IconButton>

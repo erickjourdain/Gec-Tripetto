@@ -106,6 +106,18 @@ const getAnswers = (query: string) => {
   });
 };
 
+const getUniqueAnswer = async (query: string) => {
+    const { data: rep } = await instance.request({
+      method: "GET",
+      url: `data/answers?${query}`,
+    });
+    if (rep.nombreReponses !== 1) throw new Error("La réponse n'est pas unique");
+    return instance.request({
+      method: "GET",
+      url: `data/answers/${rep.data[0].id}`,
+    })
+};
+
 const getAnswer = (id: number, query: string | null) => {
   const url = query ? `data/answers/${id}?${query}` : `data/answers/${id}`;
   return instance.request({
@@ -119,6 +131,20 @@ const updateAnswer = (payload: AnwserUpdate) => {
     method: "PUT",
     url: `data/answers/${payload.id}`,
     data: payload,
+  });
+}
+
+const lockAnswer = (id: number) => {
+  return instance.request({
+    method: "PUT",
+    url: `data/answers/lock/${id}`,
+  });
+}
+
+const unlockAnswer = (id: number) => {
+  return instance.request({
+    method: "PUT",
+    url: `data/answers/unlock/${id}`,
   });
 }
 
@@ -160,7 +186,10 @@ export {
   getForm,
   saveAnswer,
   getAnswers,
+  getUniqueAnswer,
   getAnswer,
+  lockAnswer,
+  unlockAnswer,
   updateAnswer,
   getUsers,
   createForm,
