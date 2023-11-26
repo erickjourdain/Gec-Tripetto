@@ -21,7 +21,6 @@ type UpdateFormValues = {
 // définition du type pour la gestion de l'état local
 type State = {
   updateFormulaire: boolean;
-  testFormulaire: boolean;
   formulaire: string;
   error: string | null;
 };
@@ -37,10 +36,10 @@ const EditForm = () => {
   // du formulaire Tripetto
   const [state, setState] = useState<State>({
     updateFormulaire: false,
-    testFormulaire: false,
     formulaire: "",
     error: null,
   });
+  const [dialog, setDialog] = useState(false);
 
   // définition de la requête de mise à jour du formulaire
   const { mutate } = useMutation({
@@ -111,7 +110,7 @@ const EditForm = () => {
                 formulaire: JSON.stringify(form.formulaire),
               }}
               onSubmit={onSubmit}
-              onFinish={() => navigate({ pathname: "../" }) }
+              onFinish={() => navigate({ pathname: "../" })}
               onUpdateFormulaire={(val: boolean) => {
                 setState({
                   ...state,
@@ -121,23 +120,26 @@ const EditForm = () => {
               onTestFormulaire={(val: string) => {
                 setState({
                   ...state,
-                  testFormulaire: true,
                   formulaire: val,
                 });
+                setDialog(true);
               }}
               error={state.error}
             />
           </Box>
         </Paper>
-        {state.testFormulaire && (
+        {state.formulaire.trim() !== "" &&
           <PlayTripetto
+            open={dialog}
+            onClose={() => setDialog(false)}
             form={JSON.parse(state.formulaire)}
             onSubmit={() => {
-              setState({ ...state, testFormulaire: false });
+              setState({ ...state });
+              setDialog(false);
               return true;
             }}
           />
-        )}
+        }
       </>
     );
 };

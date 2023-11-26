@@ -1,4 +1,3 @@
-import { Paper } from "@mui/material";
 import { Export, IDefinition, Import, Instance } from "@tripetto/runner";
 import { ChatRunner } from "@tripetto/runner-chat";
 import { AutoscrollRunner } from "@tripetto/runner-autoscroll";
@@ -10,16 +9,24 @@ import translationClassic from "@tripetto/runner-classic/runner/translations/fr.
 import translationChat from "@tripetto/runner-chat/runner/translations/fr.json";
 import translationAutoScroll from "@tripetto/runner-autoscroll/runner/translations/fr.json";
 import { ILocale, TTranslation } from "@tripetto/runner/module/l10n";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import { useAppContext } from "../utils/appContext";
 import { Context } from "../@types/context";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 
 type TripettoProps = {
+  open: boolean;
+  onClose: () => void;
   form: IDefinition;
   data?: Export.IExportables;
   onSubmit?: (instance: Instance) => boolean;
 };
 
-const PlayTripetto = ({ form, data, onSubmit }: TripettoProps) => {
+const PlayTripetto = ({ open, onClose, form, data, onSubmit }: TripettoProps) => {
   let runner: JSX.Element;
 
   // récupération du contexte de l'application
@@ -27,14 +34,15 @@ const PlayTripetto = ({ form, data, onSubmit }: TripettoProps) => {
 
   const onImport = (instance: Instance) => {
     const values: Import.IFieldByName[] = [];
-    if (data) data.fields.forEach(field => {
-      values.push({
-        name: field.name,
-        value: field.value
-      })
-    });
+    if (data)
+      data.fields.forEach((field) => {
+        values.push({
+          name: field.name,
+          value: field.value,
+        });
+      });
     Import.fields(instance, values);
-  }
+  };
 
   // choix du type de formulaire
   switch (appContext.runner) {
@@ -44,7 +52,6 @@ const PlayTripetto = ({ form, data, onSubmit }: TripettoProps) => {
           definition={form}
           locale={localeChat as unknown as ILocale}
           translations={translationChat as unknown as TTranslation}
-          customStyle={{ margin: "10px", padding: "5px" }}
           onImport={onImport}
           onSubmit={onSubmit}
         />
@@ -56,7 +63,6 @@ const PlayTripetto = ({ form, data, onSubmit }: TripettoProps) => {
           definition={form}
           locale={localeAutoScroll as unknown as ILocale}
           translations={translationAutoScroll as unknown as TTranslation}
-          customStyle={{ margin: "10px", padding: "5px" }}
           onImport={onImport}
           onSubmit={onSubmit}
         />
@@ -69,7 +75,6 @@ const PlayTripetto = ({ form, data, onSubmit }: TripettoProps) => {
           definition={form}
           locale={localeClassic as unknown as ILocale}
           translations={translationClassic as unknown as TTranslation}
-          customStyle={{ margin: "10px", padding: "5px" }}
           onImport={onImport}
           onSubmit={onSubmit}
         />
@@ -78,13 +83,15 @@ const PlayTripetto = ({ form, data, onSubmit }: TripettoProps) => {
   }
 
   return (
-    <Paper
-      sx={{
-        marginTop: "10px",
-      }}
-    >
-      {runner}
-    </Paper>
+    <Dialog open={open} fullWidth maxWidth="md" onClose={onClose} scroll="paper" >
+      <DialogTitle>Formulaire Qualification</DialogTitle>
+      <DialogContent dividers>
+        <DialogContentText sx={{ width: "90%" }}>{runner}</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Fermer</Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

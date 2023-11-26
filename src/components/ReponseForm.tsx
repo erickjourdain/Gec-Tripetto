@@ -56,6 +56,7 @@ const ReponseForm = ({ answer, versions, onVersionChange }: ReponseFormProps) =>
   // définition état du component
   const [reponses, setReponses] = useState<string[]>([]);
   const [modification, setModification] = useState<boolean>(false);
+  const [dialog, setDialog] = useState<boolean>(false);
 
   // définition du hook pour la gestion du formulaire
   const {
@@ -100,6 +101,7 @@ const ReponseForm = ({ answer, versions, onVersionChange }: ReponseFormProps) =>
   // mise à jour suite validation formualire Tripetto
   const handleTrippetoChange = (instance: Instance) => {
     if (form && answer) {
+      setDialog(false);
       const exportables = Export.exportables(instance);
       setValue("reponse", JSON.stringify(exportables));
       setReponses([reponses[0], JSON.stringify(exportables)]);
@@ -231,7 +233,7 @@ const ReponseForm = ({ answer, versions, onVersionChange }: ReponseFormProps) =>
         {form && !modification && <TableReponse form={form} reponses={reponses} />}
         {form && form.formulaire && modification && (
           <div style={{ width: "100%" }}>
-            <PlayTripetto form={form.formulaire} data={JSON.parse(answer.reponse)} onSubmit={handleTrippetoChange} />
+            <PlayTripetto open={dialog} onClose={() => setDialog(false)} form={form.formulaire} data={JSON.parse(answer.reponse)} onSubmit={handleTrippetoChange} />
           </div>
         )}{" "}
         <Box mt={3}>

@@ -1,44 +1,48 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { Export, Instance } from "@tripetto/runner";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import { saveAnswer } from "../utils/apiCall";
+import manageError from "../utils/manageError";
+import { formTripettoAnswers } from "../utils/format";
+import { FormAnswers } from "../@types/formAnswers";
 import { useFormulaire } from "../pages/IndexForm";
 import PlayTripetto from "./PlayTripetto";
 import ResultsTable from "./ResultsTable";
-import { saveAnswer } from "../utils/apiCall";
-import manageError from "../utils/manageError";
-import { useAppContext } from "../utils/appContext";
-import { formTripettoAnswers } from "../utils/format";
-import { Context } from "../@types/context";
-import { FormAnswers } from "../@types/formAnswers";
-import { useNavigate } from "react-router";
 
-type Workflow = "qualification" | "resultat" | "terminé";
+type PlayFormProps = {
+  open: boolean;
+}
 
-const PlayForm = () => {
+const PlayForm = ({ open }: PlayFormProps) => {
   const navigate = useNavigate();
 
-  // récupération du contexte de l'application
-  const { appContext } = useAppContext() as Context;
   // récupération du formulaire de qualification
   const { form } = useFormulaire();
-  // State: avancement
-  const [workflow, setWorkflow] = useState<Workflow>("qualification");
   // State: réponses
   const [reponses, setReponses] = useState<Export.IExportables | null>(null);
-  // State: values
-  //const [values, setValues] = useState<Export.IValues | null>(null);
   // State: réponses formatées
   const [formattedReponses, setFormattedReponses] = useState<FormAnswers[]>([]);
   // State: gestion des erreurs
   const [erreur, setErreur] = useState<String | null>(null);
+  // State: boite de dialogue formulaire
+  const [dialog, setDialog] = useState(false);
+  // State: avancement
+  const [resultat, setResultat] = useState<boolean>(false);
+
+  useEffect(() => {
+    setDialog(open)
+  }, [open]);
 
   // fonction de traitement des données fournies en réponse au formulaire
   const onSubmit = (instance: Instance) => {
+    // fermeture de la boite de dialogue
+    setDialog(false);
     // récupération des réponses fournies au questionnaire
     const exportables = Export.exportables(instance);
     //const values = Export.values(instance);
@@ -46,7 +50,7 @@ const PlayForm = () => {
     setReponses(exportables);
     const data = form ? formTripettoAnswers(form, exportables) : [];
     setFormattedReponses(data);
-    setWorkflow("resultat");
+    setResultat(true);
     return true;
   };
 
@@ -63,30 +67,33 @@ const PlayForm = () => {
     });
   };
 
-  if (form && form.formulaire && workflow === "qualification") return <PlayTripetto form={form.formulaire} onSubmit={onSubmit} />;
-
-  if (workflow === "resultat")
+  if (form && form.formulaire)
     return (
-      <Paper
-        sx={{
-          marginTop: "10px",
-        }}
-      >
-        <Box sx={{ minWidth: 400, maxWidth: "80%", margin: "auto" }}>
-          <ResultsTable reponses={formattedReponses} />
-          <Typography variant="inherit" color="error">
-            {erreur}
-          </Typography>
-          <Stack direction="row" spacing={2} sx={{ paddingBottom: "10px" }}>
-            <Button variant="contained" color="primary" onClick={save}>
-              Enregistrer
-            </Button>
-            <Button variant="contained" color="secondary" onClick={() => navigate({ pathname: "../" })}>
-              Annuler
-            </Button>
-          </Stack>
-        </Box>
-      </Paper>
+      <>
+        <PlayTripetto open={dialog} onClose={() => navigate(-1)} form={form.formulaire} onSubmit={onSubmit} />
+        {resultat && (
+          <Paper
+            sx={{
+              marginTop: "10px",
+            }}
+          >
+            <Box sx={{ minWidth: 400, maxWidth: "80%", margin: "auto" }}>
+              <ResultsTable reponses={formattedReponses} />
+              <Typography variant="inherit" color="error">
+                {erreur}
+              </Typography>
+              <Stack direction="row" spacing={2} sx={{ paddingBottom: "10px" }}>
+                <Button variant="contained" color="primary" onClick={save}>
+                  Enregistrer
+                </Button>
+                <Button variant="contained" color="secondary" onClick={() => navigate({ pathname: "../" })}>
+                  Annuler
+                </Button>
+              </Stack>
+            </Box>
+          </Paper>
+        )}
+      </>
     );
 };
 

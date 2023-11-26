@@ -5,9 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Context } from "../@types/context";
 import { FormCreation } from "../@types/formCreation";
-import { useAppContext } from "../utils/appContext";
 import FormInputs from "../components/FormInputs";
 import PlayTripetto from "../components/PlayTripetto";
 import { createForm } from "../utils/apiCall";
@@ -15,7 +13,6 @@ import manageError from "../utils/manageError";
 
 // définition du type pour la gestion de l'état local
 type State = {
-  testFormulaire: boolean;
   formulaire: string;
   error: string | null;
 };
@@ -27,16 +24,13 @@ type State = {
 const AddForm = () => {
   const navigate = useNavigate();
 
-  // récupération du contexte de l'application
-  const { appContext } = useAppContext() as Context;
-
   // définition de l'état du composant pour gestion de la MAJ des données
   // du formulaire Tripetto
   const [state, setState] = useState<State>({
-    testFormulaire: false,
     formulaire: "",
     error: null,
   });
+  const [dialog, setDialog] = useState(false);
 
   // définition de la requête de création du formulaire
   const { mutate } = useMutation({
@@ -79,23 +73,26 @@ const AddForm = () => {
             onTestFormulaire={(val: string) => {
               setState({
                 ...state,
-                testFormulaire: true,
                 formulaire: val,
               });
+              setDialog(true);
             }}
             error={state.error}
           />
         </Box>
       </Paper>
-      {state.testFormulaire && (
+      {state.formulaire.trim() !== "" &&
         <PlayTripetto
+          open={dialog}
+          onClose={() => setDialog(false)}
           form={JSON.parse(state.formulaire)}
           onSubmit={() => {
-            setState({ ...state, testFormulaire: false });
+            setState({ ...state });
+            setDialog(false);
             return true;
           }}
         />
-      )}
+      }
     </>
   );
 };

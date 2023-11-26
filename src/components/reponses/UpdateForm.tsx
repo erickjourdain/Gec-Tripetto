@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { Export, Instance } from "@tripetto/runner";
@@ -44,9 +43,9 @@ interface UpdateFormProps {
 const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) => {
   const statuts = ["BROUILLON", "QUALIFICATION", "DEVIS", "GAGNE", "PERDU", "TERMINE"];
 
-  const [modification, setModification] = useState<boolean>(false);
   const [reponses, setReponses] = useState<string[]>([]);
   const [mutation, setMutation] = useState<boolean>(false);
+  const [dialog, setDialog] = useState<boolean>(false);
 
   // query de mutation des données
   const { mutate } = useMutation({
@@ -98,7 +97,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
   const handleTrippetoChange = (instance: Instance) => {
     const exportables = Export.exportables(instance);
     setValue("reponse", JSON.stringify(exportables));
-    setModification(false);
+    setDialog(false);
     setReponses([answer.reponse, JSON.stringify(exportables)]);
     return true;
   };
@@ -111,6 +110,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
   // mise à jour des données
   const handleSubmit = () => {
     if (answer) {
+      setDialog(false);
       const payload: AnwserUpdate = { id: answer.id };
       if (answer.statut !== getValues("statut")) payload.statut = getValues("statut");
       if (answer.demande !== getValues("demande")) payload.demande = getValues("demande");
@@ -204,28 +204,28 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
         {(courante || isContributor()) && !locked && (
           <Box>
             <Button
-              disabled={!answer?.courante || modification}
+              disabled={!answer?.courante || dialog}
               variant="outlined"
               color="secondary"
               endIcon={<ChangeCircleOutlinedIcon />}
               onClick={() => {
-                setModification(true);
+                setDialog(true);
               }}
             >
               Modifier réponse
             </Button>
           </Box>
         )}
-        {!modification && <TableReponse form={JSON.parse(answer.formulaire.formulaire)} reponses={reponses} />}
-        {modification && (
-          <div style={{ width: "100%" }}>
-            <PlayTripetto
-              form={JSON.parse(answer.formulaire.formulaire)}
-              data={JSON.parse(answer.reponse)}
-              onSubmit={handleTrippetoChange}
-            />
-          </div>
-        )}
+        {!dialog && <TableReponse form={JSON.parse(answer.formulaire.formulaire)} reponses={reponses} />}
+        <div style={{ width: "100%" }}>
+          <PlayTripetto
+            open={dialog}
+            onClose={() => setDialog(false)}
+            form={JSON.parse(answer.formulaire.formulaire)}
+            data={JSON.parse(answer.reponse)}
+            onSubmit={handleTrippetoChange}
+          />
+        </div>
         {(courante || isContributor()) && !locked && (
           <Box mt={3}>
             <Stack spacing={2} direction="row">

@@ -32,6 +32,8 @@ const ResultForm = ({ answer }: ResultFormProps) => {
   const [workflow, setWorkflow] = useState<Workflow>("termine");
   // State: réponses formatées
   const [formattedReponses, setFormattedReponses] = useState<FormAnswers[]>([]);
+  // State: boite de dialogue formulaire
+  const [dialog, setDialog] = useState<boolean>(false);
 
   // query de récupération de la réponse
   const {
@@ -107,7 +109,7 @@ const ResultForm = ({ answer }: ResultFormProps) => {
         )}
         {workflow === "modification" && form && form?.formulaire && (
           <div style={{width: "100%"}}>
-            <PlayTripetto form={form?.formulaire} data={JSON.parse(reponse.data.donnees)}/>
+            <PlayTripetto open={dialog} onClose={ () => setDialog(false)} form={form?.formulaire} data={JSON.parse(reponse.data.donnees)}/>
           </div>
         )}
       </Box>
