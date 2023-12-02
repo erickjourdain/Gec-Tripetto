@@ -10,6 +10,7 @@ import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Link from "@mui/material/Link";
 import { delAuthorisation, login, setAuthorisation } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 
@@ -112,6 +113,7 @@ const Login = () => {
           <Typography variant="inherit" color="error">
             {errors.root?.message}
           </Typography>
+          <Link href="/signin">Créer un compte</Link>
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isLoading}>
             {!isLoading ? "Login" : "Loading ..."}
           </Button>

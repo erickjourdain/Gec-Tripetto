@@ -3,6 +3,7 @@ import { isEmpty } from "lodash";
 import { sfAnd, sfEqual, sfLike, sfOr } from "spring-filter-query-builder";
 import { FormCreation } from "../@types/formCreation";
 import { AnwserUpdate } from "../@types/answerUpdate";
+import { UserCreation } from "../@types/userCreation";
 
 // Création de l'instance Axios pour les requêtes vers l'API
 const instance = axios.create({
@@ -176,6 +177,14 @@ const getUsers = (search: string | null = null) => {
   });
 };
 
+const createUser = (payload: UserCreation) => {
+  return instance.request({
+    method: "POST",
+    url: "signin",
+    data: payload,
+  });
+}
+
 export {
   apiRequest,
   setAuthorisation,
@@ -194,4 +203,5 @@ export {
   getUsers,
   createForm,
   updateForm,
+  createUser,
 };

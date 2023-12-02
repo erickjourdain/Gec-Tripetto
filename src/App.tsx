@@ -16,6 +16,7 @@ import PlayForm from "./components/PlayForm";
 import ResultsForm from "./components/ResultsForm";
 import NotAllowed from "./components/NotAllowed";
 import IndexReponse from "./pages/IndexReponse";
+import SignIn from "./pages/SignIn";
 
 // création d'un instance de QueryClient
 const queryClient = new QueryClient({});
@@ -53,7 +54,7 @@ function App() {
             },
             {
               path: "play",
-              element: <PlayForm open/>,
+              element: <PlayForm open />,
             },
             {
               path: "answers",
@@ -70,6 +71,10 @@ function App() {
     {
       path: "/login",
       element: <Login />,
+    },
+    {
+      path: "/signin",
+      element: <SignIn />,
     },
   ]);
 
