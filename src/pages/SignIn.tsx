@@ -99,7 +99,7 @@ const SignIn = () => {
           id="prenom"
           label="prenom"
           {...register("prenom", {
-            required: "Le prenom est obligatoire.",
+            required: "Le prenom est obligatoire",
           })}
           error={errors.prenom ? true : false}
         />
@@ -113,7 +113,7 @@ const SignIn = () => {
           id="nom"
           label="nom"
           {...register("nom", {
-            required: "Le nom est obligatoire.",
+            required: "Le nom est obligatoire",
           })}
           error={errors.nom ? true : false}
         />
@@ -128,6 +128,18 @@ const SignIn = () => {
           label="login"
           {...register("login", {
             required: "Le Login est obligatoire.",
+            min: {
+              value: 5,
+              message: "Le login doit contenir au moins 5 caractères.",
+            },
+            max: {
+              value: 25,
+              message: "Le login ne peut contenir plus de 25 caractères.",
+            },
+            pattern: {
+              value: /^[a-zA-Z]*$/g,
+              message: "Le login ne peut contenir d'espace.",
+            },
           })}
           error={errors.login ? true : false}
         />
@@ -143,6 +155,18 @@ const SignIn = () => {
           type="password"
           {...register("password", {
             required: "Le mot de passe est obligatoire.",
+            min: {
+              value: 5,
+              message: "Le mot de passe doit contenir au moins 5 caractères.",
+            },
+            max: {
+              value: 25,
+              message: "Le mot de passe ne peut contenir plus de 25 caractères.",
+            },
+            pattern: {
+              value: /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)/g,
+              message: "Le mot de passe doit contenir au moins un nombre, une minuscule, une majuscule et un caractère spécial.",
+            },
           })}
           error={errors.password ? true : false}
         />

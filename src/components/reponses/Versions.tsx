@@ -73,7 +73,7 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
             }}
           >
             {versions.map((ver) => (
-              <MenuItem value={ver.id} key={ver.id}>
+              <MenuItem value={ver.version} key={ver.id}>
                 {ver.version}
               </MenuItem>
             ))}

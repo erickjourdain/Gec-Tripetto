@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { sfAnd, sfEqual } from "spring-filter-query-builder";
@@ -24,6 +24,8 @@ const IndexReponse = () => {
   const [reponse, setReponse] = useState<AnswerAPI | null>(null);
   const [locked, setLocked] = useState<boolean>(true);
 
+  const stateRef = useRef<AnswerAPI | null>(null);
+
   const handleVersionChange = (ver: string) => {
     if (reponse && reponse.utilisateur?.id === appContext.user?.id) unlock(reponse.id);
     navigate(`/formulaire/${slug}/answers/${uuid}/${ver}`);
@@ -44,18 +46,31 @@ const IndexReponse = () => {
     mutationFn: unlockAnswer,
   });
 
+
+
   // mise à jour de l'état du composant
   useEffect(() => {
     if (data && isSuccess) {
       setReponse(data.data);
       setLocked(data.data.lockedAt && data.data.utilisateur.id !== appContext.user?.id);
+      stateRef.current = data.data;
     }
   }, [data]);
   useEffect(() => {
-    return () => {
-      if (reponse && reponse.utilisateur?.id === appContext.user?.id) unlock(reponse.id);
+
+    const handleTabClose = (event: any) => {
+      event.preventDefault();
+      if (stateRef.current && stateRef.current.utilisateur?.id === appContext.user?.id) unlock(stateRef.current.id);
+      return true;
     };
-  }, [reponse]);
+
+    window.addEventListener("beforeunload", handleTabClose);
+
+    return () => {
+      if (stateRef.current && stateRef.current.utilisateur?.id === appContext.user?.id) unlock(stateRef.current.id);
+      window.removeEventListener("beforeunload", handleTabClose);
+    };
+  }, []);
 
   const handleUpdated = (ver: number) => {
     if (ver.toString() !== version) handleVersionChange(ver.toString());
@@ -89,7 +104,7 @@ const IndexReponse = () => {
           <ExportExcel />
         </Box>
         {reponse.courante && reponse.utilisateur !== null && reponse.utilisateur?.id !== appContext.user?.id && (
-          <Alert severity="info">{`${reponse.utilisateur?.prenom} ${reponse.utilisateur?.nom} a verouillé la réponse`}</Alert>
+          <Alert severity="warning">{`${reponse.utilisateur?.prenom} ${reponse.utilisateur?.nom} a verouillé la réponse`}</Alert>
         )}
         <UpdateForm courante={reponse.courante} locked={locked} answer={reponse} onUpdated={(ver: number) => handleUpdated(ver)} />
       </Paper>

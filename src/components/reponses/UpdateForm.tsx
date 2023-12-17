@@ -114,7 +114,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
       const payload: AnwserUpdate = { id: answer.id };
       if (answer.statut !== getValues("statut")) payload.statut = getValues("statut");
       if (answer.demande !== getValues("demande")) payload.demande = getValues("demande");
-      if (answer.opportunite !== getValues("opportunite")) payload.demande = getValues("opportunite");
+      if (answer.opportunite !== getValues("opportunite")) payload.opportunite = getValues("opportunite");
       if (answer.reponse !== getValues("reponse")) payload.reponse = getValues("reponse");
       setMutation(true);
       mutate(payload);
@@ -137,7 +137,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
     return (
       <>
         {!courante && (
-          <Alert sx={{ mt: 1 }} severity="info">
+          <Alert sx={{ mt: 1 }} severity="warning">
             Cette version n'est pas la version courante
           </Alert>
         )}
@@ -178,7 +178,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
               startAdornment: <InputAdornment position="start">DEM</InputAdornment>,
             }}
             disabled={!courante || !isContributor() || locked}
-            {...register("demande", { pattern: { value: /^[0-9]{6,6}$/g, message: "La demande doit comporter 6 chiffres" } })}
+            {...register("demande", { pattern: { value: /^[0-9]{7,7}$/g, message: "La demande doit comporter 7 chiffres" } })}
             error={errors.demande ? true : false}
           />
           <TextField
@@ -188,7 +188,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
               startAdornment: <InputAdornment position="start">OPP</InputAdornment>,
             }}
             disabled={!courante || !isContributor() || locked}
-            {...register("opportunite", { pattern: { value: /^[0-9]{6,6}$/g, message: "L'opportunité doit comporter 6 chiffres" } })}
+            {...register("opportunite", { pattern: { value: /^[0-9]{7,7}$/g, message: "L'opportunité doit comporter 7 chiffres" } })}
             error={errors.opportunite ? true : false}
           />
           <Typography variant="inherit" color="error" sx={{ width: "30%", m: 1 }}>

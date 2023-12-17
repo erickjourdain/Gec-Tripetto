@@ -1,6 +1,7 @@
 import { isEmpty } from "lodash";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { sfLike, sfOr } from "spring-filter-query-builder";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -24,7 +25,10 @@ const SearchUser = ({ onUserChange }: SearchUserProps) => {
   // query de récupération des utilisateurs
   const { data, refetch, isError, isSuccess } = useQuery({
     queryKey: ["getUsers"],
-    queryFn: () => getUsers(search),
+    queryFn: () => {
+      const filter = `filter=${sfOr([sfLike("nom",search ? search : ""),sfLike("prenom",search ? search : "")])}`;
+      return getUsers(filter, ["id", "nom", "prenom"]);
+    },
     enabled: false,
     refetchOnWindowFocus: false,
   });

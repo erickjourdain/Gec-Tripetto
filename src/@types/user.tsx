@@ -5,10 +5,11 @@ export type User = {
   nom: string;
   prenom: string;
   login: string;
-  password: string;
+  password?: string;
   valide: boolean;
   bloque: boolean;
   role: Role;
-  createdAt: string;
-  updatedAt: string;
+  slug?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };

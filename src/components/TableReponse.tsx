@@ -88,7 +88,7 @@ const TableReponse = ({ form, reponses }: TableReponseProps) => {
                     <TableCell>
                       <div
                         dangerouslySetInnerHTML={{
-                          __html: reponseString(formAnswers[1][ind].reponses),
+                          __html: reponseString(formAnswers[1][page * itemsPerPage + ind].reponses),
                         }}
                       />
                     </TableCell>

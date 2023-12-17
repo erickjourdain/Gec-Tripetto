@@ -1,4 +1,5 @@
 import { useState, MouseEvent } from "react";
+import { useNavigate } from "react-router";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import IconButton from "@mui/material/IconButton";
@@ -14,6 +15,7 @@ const options = ["Classic", "Autoscroll", "Chat"];
 const Settings = () => {
   // récupération du contexte de l'application
   const { appContext, setAppContext } = useAppContext() as Context;
+  const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -71,7 +73,7 @@ const Settings = () => {
         {isAdmin() &&
           [
             <Divider key="divider"/>,
-            <MenuItem key="admin">Administration</MenuItem>
+            <MenuItem key="admin" onClick={() => navigate("/admin")}>Administration</MenuItem>
           ]
         }
       </Menu>

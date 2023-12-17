@@ -63,7 +63,8 @@ const ResultsTable = ({ reponses }: ResultsTableProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {reponses.map((reponse) => (
+          {(itemsPerPage > 0 ? reponses.slice(page * itemsPerPage, page * itemsPerPage + itemsPerPage) : reponses).map(
+            (reponse) => (
             <TableRow key={reponse.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
               <TableCell component="th" scope="row">
                 {(reponse.question) ? reponse.question : reponse.reponses[0].name}

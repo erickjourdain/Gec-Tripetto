@@ -17,6 +17,8 @@ import ResultsForm from "./components/ResultsForm";
 import NotAllowed from "./components/NotAllowed";
 import IndexReponse from "./pages/IndexReponse";
 import SignIn from "./pages/SignIn";
+import Admin from "./pages/Admin";
+import UserForm from "./pages/UserForm";
 
 // création d'un instance de QueryClient
 const queryClient = new QueryClient({});
@@ -38,6 +40,19 @@ function App() {
         {
           index: true,
           element: <Index />,
+        },
+        {
+          path: "admin",
+          children: [
+            {
+              index: true,
+              element: <Admin />,
+            },
+            {
+              path: "user/:slug",
+              element: <UserForm/>
+            }
+          ]
         },
         {
           path: "ajouter",
