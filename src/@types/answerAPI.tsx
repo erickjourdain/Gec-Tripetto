@@ -1,5 +1,6 @@
 import { FormAPI } from "./formAPI";
 import { User } from "./user";
+import { lockAPI } from "./lockAPI";
 
 export type AnswerAPI = {
   id: number;
@@ -13,8 +14,7 @@ export type AnswerAPI = {
   statut: string;
   version: number;
   courante: boolean;
-  utilisateur?: User;
-  lockedAt?: number;
+  lock: lockAPI;
   createdAt?: number;
   updatedAt?: number;
 };

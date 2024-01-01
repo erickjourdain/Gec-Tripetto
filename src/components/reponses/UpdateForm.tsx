@@ -38,9 +38,10 @@ interface UpdateFormProps {
   locked: boolean;
   answer: AnswerAPI;
   onUpdated: (version: number) => void;
+  onTouched: (isModify: boolean) => void;
 }
 
-const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) => {
+const UpdateForm = ({ courante, locked, answer, onUpdated, onTouched }: UpdateFormProps) => {
   const statuts = ["BROUILLON", "QUALIFICATION", "DEVIS", "GAGNE", "PERDU", "TERMINE"];
 
   const [reponses, setReponses] = useState<string[]>([]);
@@ -64,6 +65,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
     register,
     reset,
     setValue,
+    watch,
   } = useForm<IFormInputs>({
     mode: "all",
     defaultValues: {
@@ -92,6 +94,12 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
     }
     setReponses([answer.reponse]);
   }, [answer]);
+  useEffect(() => {
+    const sucbscription = watch(() => {
+      onTouched(isChanged());
+    });
+    return () => sucbscription.unsubscribe();
+  }, [watch])
 
   // mise à jour suite validation formulaire Tripetto
   const handleTrippetoChange = (instance: Instance) => {

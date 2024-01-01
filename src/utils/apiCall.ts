@@ -137,14 +137,14 @@ const updateAnswer = (payload: AnwserUpdate) => {
 
 const lockAnswer = (id: number) => {
   return instance.request({
-    method: "PUT",
+    method: "POST",
     url: `data/answers/lock/${id}`,
   });
 };
 
 const unlockAnswer = (id: number) => {
   return instance.request({
-    method: "PUT",
+    method: "POST",
     url: `data/answers/unlock/${id}`,
   });
 };
