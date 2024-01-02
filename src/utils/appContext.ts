@@ -1,5 +1,5 @@
+import { Context } from "gec-tripetto";
 import { createContext, useContext } from "react";
-import { Context } from "../@types/context";
 
 export const AppContext = createContext<Context | null>(null);
 

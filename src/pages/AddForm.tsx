@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { FormCreation } from "../@types/formCreation";
+import { FormCreation } from "gec-tripetto";
 import FormInputs from "../components/FormInputs";
 import PlayTripetto from "../components/PlayTripetto";
 import { createForm } from "../utils/apiCall";

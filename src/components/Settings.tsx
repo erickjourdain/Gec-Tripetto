@@ -7,9 +7,10 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { Context } from "gec-tripetto";
 import { useAppContext } from "../utils/appContext";
-import { isAdmin } from "../utils/auth"
-import { Context } from "../@types/context";
+import { isAdmin } from "../utils/auth";
+
 
 const options = ["Classic", "Autoscroll", "Chat"];
 

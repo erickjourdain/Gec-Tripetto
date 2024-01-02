@@ -13,10 +13,11 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useAppContext } from "../utils/appContext";
-import { Context } from "../@types/context";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import { Context } from "gec-tripetto";
+import { useAppContext } from "../utils/appContext";
+
 
 type TripettoProps = {
   open: boolean;

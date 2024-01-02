@@ -9,8 +9,9 @@ import { Typography } from "@mui/material";
 import Menu from "../components/Menu";
 import Sidebar from "../components/Sidebar";
 import { useAppContext } from "../utils/appContext";
-import { Context } from "../@types/context";
+// import { Context } from "../@types/context";
 import { getCurrentUser } from "../utils/apiCall";
+import { Context } from "gec-tripetto";
 
 const drawerWidth: number = 240;
 const defaultTheme = createTheme();

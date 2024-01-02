@@ -1,9 +1,8 @@
-import { utils, writeFileXLSX, WorkSheet } from "xlsx";
+import { utils, writeFileXLSX } from "xlsx";
 import { sfEqual } from "spring-filter-query-builder";
-import { AnswersAPI } from "../@types/answersAPI";
-import { Answer } from "../@types/formAnswers";
+import { Answer, AnswersAPI } from "gec-tripetto";
 import { getAnswers } from "./apiCall";
-import { formTripettoAnswers, formatDate, formatDateTime } from "./format";
+import { formTripettoAnswers } from "./format";
 
 const reponseString = (values: Answer[]) => {
   if (values.length === 1) {

@@ -6,7 +6,7 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import TableBody from "@mui/material/TableBody";
 import TablePagination from "@mui/material/TablePagination";
-import { Answer, FormAnswers } from "../@types/formAnswers";
+import { Answer, FormAnswers } from "gec-tripetto";
 import { formatDate } from "../utils/format";
 
 // définition du type pour les Props du composant

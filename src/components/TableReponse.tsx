@@ -5,9 +5,8 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import TablePagination from "@mui/material/TablePagination";
+import { Answer, Form, FormAnswers } from "gec-tripetto";
 import { formTripettoAnswers, formatDate } from "../utils/format";
-import { Answer, FormAnswers } from "../@types/formAnswers";
-import { Form } from "../@types/form";
 
 type TableReponseProps = {
   form: Form;

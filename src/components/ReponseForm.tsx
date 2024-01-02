@@ -14,14 +14,14 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Alert from "@mui/material/Alert";
-import { AnswerAPI } from "../@types/answerAPI";
-import { AnwserUpdate } from "../@types/answerUpdate";
+import { AnswerAPI, AnwserUpdate } from "gec-tripetto";
 import { formatDateTime } from "../utils/format";
 import { updateAnswer } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 import TableReponse from "./TableReponse";
 import { useFormulaire } from "../pages/IndexForm";
 import PlayTripetto from "./PlayTripetto";
+
 
 interface Version {
   id: number;

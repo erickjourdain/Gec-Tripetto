@@ -7,13 +7,14 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import { FormAnswers } from "gec-tripetto";
 import { saveAnswer } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 import { formTripettoAnswers } from "../utils/format";
-import { FormAnswers } from "../@types/formAnswers";
 import { useFormulaire } from "../pages/IndexForm";
 import PlayTripetto from "./PlayTripetto";
 import ResultsTable from "./ResultsTable";
+
 
 type PlayFormProps = {
   open: boolean;

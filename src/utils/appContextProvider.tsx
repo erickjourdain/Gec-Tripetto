@@ -1,8 +1,7 @@
 import { useState } from "react";
-
 import { AppContext } from "./appContext";
-import { ChildrenProps } from "../@types/childrenProps";
-import { ContextType } from "../@types/context";
+import { ChildrenProps, ContextType } from "gec-tripetto";
+
 
 export function AppContextProvider({ children }: ChildrenProps) {
   const [appContext, setAppContext] = useState<ContextType>({

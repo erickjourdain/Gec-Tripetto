@@ -12,7 +12,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { Role, User } from "../../@types/user";
+import { Role, User } from "gec-tripetto";
 import { updateUser } from "../../utils/apiCall";
 
 type IFormInputs = {

@@ -1,4 +1,4 @@
-import { Context } from "../@types/context";
+import { Context } from "gec-tripetto";
 import { useAppContext } from "./appContext";
 
 const isAdmin = () => {

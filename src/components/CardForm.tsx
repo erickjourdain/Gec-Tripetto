@@ -11,7 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import SmartDisplayIcon from "@mui/icons-material/SmartDisplay";
 import FindInPageIcon from "@mui/icons-material/FindInPage";
-import { Form } from "../@types/form";
+import { Form } from "gec-tripetto";
 import { formatDate } from "../utils/format";
 import { isAdmin } from "../utils/auth";
 

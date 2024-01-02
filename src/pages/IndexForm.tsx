@@ -3,9 +3,9 @@ import { Outlet, useNavigate, useOutletContext, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import Alert from "@mui/material/Alert";
 import { AlertTitle } from "@mui/material";
+import { Form } from "gec-tripetto";
 import { getForm } from "../utils/apiCall";
 import manageError from "../utils/manageError";
-import { Form } from "../@types/form";
 import CardForm from "../components/CardForm";
 
 type ContextType = {

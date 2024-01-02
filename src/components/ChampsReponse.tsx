@@ -9,8 +9,9 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import InputAdornment from "@mui/material/InputAdornment";
 import Typography from "@mui/material/Typography";
-import { AnswerAPI } from "../@types/answerAPI";
+import { AnswerAPI } from "gec-tripetto";
 import { formatDateTime } from "../utils/format";
+
 
 interface ReturnValues {
   statut: string;

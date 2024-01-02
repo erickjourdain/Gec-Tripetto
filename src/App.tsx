@@ -2,9 +2,9 @@ import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { Context } from "gec-tripetto";
 import { useAppContext } from "./utils/appContext";
 import { setAuthorisation } from "./utils/apiCall";
-import { Context } from "./@types/context";
 import Layout from "./pages/Layout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";

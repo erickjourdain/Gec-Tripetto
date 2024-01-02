@@ -12,12 +12,11 @@ import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import CircularProgress from "@mui/material/CircularProgress";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { AnswerAPI, User } from "gec-tripetto";
 import { useFormulaire } from "../pages/IndexForm";
 import manageError from "../utils/manageError";
 import { getAnswers } from "../utils/apiCall";
 import { formatDateTime } from "../utils/format";
-import { User } from "../@types/user";
-import { AnswerAPI } from "../@types/answerAPI";
 import SearchUser from "./SearchUser";
 
 /**

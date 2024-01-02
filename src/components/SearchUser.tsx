@@ -5,7 +5,7 @@ import { sfLike, sfOr } from "spring-filter-query-builder";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { User } from "../@types/user";
+import { User } from "gec-tripetto";
 import { getUsers } from "../utils/apiCall";
 
 // définition du type pour les Props du composant

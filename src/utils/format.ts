@@ -3,8 +3,7 @@ import { DateTimeFormatOptions } from "luxon";
 import lodash from "lodash";
 import deepdash from "deepdash";
 import { findIndex, get } from "lodash";
-import { FormAnswers } from "../@types/formAnswers";
-import { Form } from "../@types/form";
+import { Form, FormAnswers } from "gec-tripetto";
 
 const _ = deepdash(lodash);
 
