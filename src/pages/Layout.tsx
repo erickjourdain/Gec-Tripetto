@@ -5,12 +5,12 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
+import { Typography } from "@mui/material";
 import Menu from "../components/Menu";
 import Sidebar from "../components/Sidebar";
 import { useAppContext } from "../utils/appContext";
 import { Context } from "../@types/context";
 import { getCurrentUser } from "../utils/apiCall";
-import { Typography } from "@mui/material";
 
 const drawerWidth: number = 240;
 const defaultTheme = createTheme();

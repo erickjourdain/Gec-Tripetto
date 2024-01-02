@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import { sfEqual } from "spring-filter-query-builder";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
@@ -30,7 +30,7 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
   const [versions, setVersions] = useState<Version[]>([]);
 
   // query récupération des versions existantes de la réponse
-  const { data, error, isError, isLoading, isSuccess, remove } = useQuery({
+  const { data, error, isError, isLoading, isSuccess } = useQuery({
     queryKey: ["getAnswersVersion", uuid],
     queryFn: () => {
       if (uuid === undefined) return Promise.resolve(null);
@@ -47,7 +47,10 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
   }, [data]);
   // suppression de la requête de la mémoire lors du "démontage" du composant
   useEffect(() => {
-    return () => remove();
+    return () => {
+      const queryClient = new QueryClient();
+      queryClient.removeQueries({ queryKey: ["getAnswersVersion"] });
+    }
   },[])
 
   if (isLoading)

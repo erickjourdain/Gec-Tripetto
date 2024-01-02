@@ -37,7 +37,7 @@ const Login = () => {
   });
 
   // Requête de login pour récupération du token de session
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (response) => {
       // sauvegarde du token dans le navigateur
@@ -114,8 +114,8 @@ const Login = () => {
             {errors.root?.message}
           </Typography>
           <Link href="/signin">Créer un compte</Link>
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isLoading}>
-            {!isLoading ? "Login" : "Loading ..."}
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isPending}>
+            {!isPending ? "Login" : "Loading ..."}
           </Button>
         </Box>
       </Box>

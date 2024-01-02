@@ -63,7 +63,7 @@ const UpdateForm = ({ user, onError, onSaved }: UpdateFormProps) => {
     });
   }, [user]);
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: updateUser,
     onSuccess: onSaved,
     onError: (error: Error) => onError(error),
@@ -154,10 +154,10 @@ const UpdateForm = ({ user, onError, onSaved }: UpdateFormProps) => {
       </Box>
       <Box mt={3} display="flex" alignItems="flex-start">
         <Stack spacing={2} direction="row">
-          <Button variant="contained" color="primary" disabled={isLoading} type="submit">
-            {!isLoading ? "Mettre à jour" : "Loading..."}
+          <Button variant="contained" color="primary" disabled={isPending} type="submit">
+            {!isPending ? "Mettre à jour" : "Loading..."}
           </Button>
-          <Button variant="contained" color="warning" disabled={isLoading} onClick={() => reset()}>
+          <Button variant="contained" color="warning" disabled={isPending} onClick={() => reset()}>
             Reset
           </Button>
         </Stack>

@@ -43,7 +43,7 @@ const SignIn = () => {
   });
 
   // Requête d'enregistrement
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: createUser,
     onSuccess: () => setCreated(true),
     onError: (error) => {
@@ -207,8 +207,8 @@ const SignIn = () => {
         <Typography variant="inherit" color="error">
           {errors.root?.message}
         </Typography>
-        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isLoading}>
-          {!isLoading ? "Enregistrer" : "Loading ..."}
+        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isPending}>
+          {!isPending ? "Enregistrer" : "Loading ..."}
         </Button>
       </Box>
     </Container>

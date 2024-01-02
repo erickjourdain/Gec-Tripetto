@@ -158,11 +158,13 @@ const login = (payload: { login: string; password: string }) => {
 };
 
 const getCurrentUser = () => {
+  console.log("hello");
   return instance.request({
     method: "GET",
     url: "/data/users/me",
   });
 };
+
 const getUsers = (filter: string | null = null, include: string[] = [], page: number = 1, size: number = 10) => {
   // construction du chemin d'interrogation de l'API
   const params = [];

@@ -68,7 +68,7 @@ const ResultForm = ({ answer }: ResultFormProps) => {
       </Alert>
     );
 
-  return (
+  if(reponse) return (
     <Paper
       sx={{
         marginTop: "10px",

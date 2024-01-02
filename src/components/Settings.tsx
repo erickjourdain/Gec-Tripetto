@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import IconButton from "@mui/material/IconButton";
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -72,11 +73,12 @@ const Settings = () => {
         })}
         {isAdmin() &&
           [
-            <Divider key="divider"/>,
+            <Divider key="divider" />,
             <MenuItem key="admin" onClick={() => navigate("/admin")}>Administration</MenuItem>
           ]
         }
       </Menu>
+      <IconButton color="inherit" onClick={() => navigate("/close")}><ExitToAppIcon /></IconButton>
     </Box>
   );
 };
