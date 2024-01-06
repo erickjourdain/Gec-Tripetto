@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { AxiosResponse } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { Export, Instance } from "@tripetto/runner";
 import Box from "@mui/material/Box";
@@ -14,10 +15,12 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Alert from "@mui/material/Alert";
 import ChangeCircleOutlinedIcon from "@mui/icons-material/ChangeCircleOutlined";
-import { AnswerAPI, AnwserUpdate } from "gec-tripetto";
+import { AnswerAPI, AnwserUpdate, Context } from "gec-tripetto";
+import { useAppContext } from "../../utils/appContext";
 import { updateAnswer } from "../../utils/apiCall";
 import { formatDateTime } from "../../utils/format";
 import { isContributor } from "../../utils/auth";
+import manageError from "../../utils/manageError";
 import TableReponse from "../TableReponse";
 import PlayTripetto from "../PlayTripetto";
 
@@ -36,23 +39,27 @@ interface UpdateFormProps {
   courante: boolean;
   locked: boolean;
   answer: AnswerAPI;
-  onUpdated: (version: number) => void;
-  onTouched: (isModify: boolean) => void;
+  onUpdated: (updatedAnswer: AnswerAPI) => void;
 }
 
-const UpdateForm = ({ courante, locked, answer, onUpdated, onTouched }: UpdateFormProps) => {
+const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) => {
   const statuts = ["BROUILLON", "QUALIFICATION", "DEVIS", "GAGNE", "PERDU", "TERMINE"];
 
+  // Chargement des données du Contexte de l'application
+  const { appContext, setAppContext } = useAppContext() as Context;
+
   const [reponses, setReponses] = useState<string[]>([]);
-  const [mutation, setMutation] = useState<boolean>(false);
   const [dialog, setDialog] = useState<boolean>(false);
 
   // query de mutation des données
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: updateAnswer,
-    onSuccess: (rep) => {
-      setMutation(false);
-      onUpdated(rep.data.version);
+    onSuccess: (rep: AxiosResponse) => {
+      setAppContext({ ...appContext, alerte: { severite: "success", message: "les modifications ont été enregsitrées" }, changement: false });
+      onUpdated(rep.data);
+    },
+    onError(error) {
+      setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
     },
   });
 
@@ -92,10 +99,11 @@ const UpdateForm = ({ courante, locked, answer, onUpdated, onTouched }: UpdateFo
       });
     }
     setReponses([answer.reponse]);
+    setAppContext({ ...appContext, changement: false });
   }, [answer]);
   useEffect(() => {
     const sucbscription = watch(() => {
-      onTouched(isChanged());
+      setAppContext({ ...appContext, changement: isChanged() });
     });
     return () => sucbscription.unsubscribe();
   }, [watch])
@@ -123,7 +131,6 @@ const UpdateForm = ({ courante, locked, answer, onUpdated, onTouched }: UpdateFo
       if (answer.demande !== getValues("demande")) payload.demande = getValues("demande");
       if (answer.opportunite !== getValues("opportunite")) payload.opportunite = getValues("opportunite");
       if (answer.reponse !== getValues("reponse")) payload.reponse = getValues("reponse");
-      setMutation(true);
       mutate(payload);
     }
   };
@@ -236,8 +243,8 @@ const UpdateForm = ({ courante, locked, answer, onUpdated, onTouched }: UpdateFo
         {(courante || isContributor()) && !locked && (
           <Box mt={3}>
             <Stack spacing={2} direction="row">
-              <Button variant="contained" color="primary" disabled={!isValid || !isChanged() || mutation} onClick={handleSubmit}>
-                {mutation ? "Sauvegare en cours" : "Mettre à jour"}
+              <Button variant="contained" color="primary" disabled={!isValid || !isChanged() || isPending} onClick={handleSubmit}>
+                {isPending ? "Sauvegare en cours" : "Mettre à jour"}
               </Button>
               <Button variant="contained" color="warning" onClick={handleReset}>
                 Reset

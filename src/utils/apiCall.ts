@@ -126,7 +126,7 @@ const getAnswer = (id: number, query: string | null) => {
 
 const updateAnswer = (payload: AnwserUpdate) => {
   return instance.request({
-    method: "PUT",
+    method: "PATCH",
     url: `data/answers/${payload.id}`,
     data: payload,
   });
@@ -155,7 +155,6 @@ const login = (payload: { login: string; password: string }) => {
 };
 
 const getCurrentUser = () => {
-  console.log("hello");
   return instance.request({
     method: "GET",
     url: "/data/users/me",

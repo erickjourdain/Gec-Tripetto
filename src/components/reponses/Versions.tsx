@@ -8,8 +8,10 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { Context } from "gec-tripetto";
 import { getAnswers } from "../../utils/apiCall";
-import ErrorAlert from "../../components/ErrorAlert";
+import manageError from "../../utils/manageError";
+import { useAppContext } from "../../utils/appContext";
 
 interface Version {
   id: number;
@@ -23,6 +25,9 @@ interface VersionsProps {
 }
 
 const Versions = ({ version, onVersionChange }: VersionsProps) => {
+  // Chargement des données du Contexte de l'application
+  const { appContext, setAppContext } = useAppContext() as Context;
+  
   // récupération du paramètre de la page: identifiant de la série de réponses
   const { uuid } = useParams();
 
@@ -60,7 +65,7 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
       </Box>
     );
 
-  if (isError) return <ErrorAlert error={error} />;
+  if (isError) setAppContext({...appContext, alerte: { severite: "error", message: manageError(error)}});
 
   if (isSuccess && versions.length > 0)
     return (

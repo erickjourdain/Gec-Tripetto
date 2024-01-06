@@ -12,19 +12,17 @@ import { getUniqueAnswer, unlockAnswer } from "../utils/apiCall";
 import Createur from "../components/reponses/Createur";
 import Versions from "../components/reponses/Versions";
 import UpdateForm from "../components/reponses/UpdateForm";
-import ErrorAlert from "../components/ErrorAlert";
 import ExportExcel from "../components/reponses/ExportExcel";
-import QuitConfirmDialog from "../components/QuitConfirmDialog";
+import manageError from "../utils/manageError";
 
 const IndexReponse = () => {
   // Chargement des données du Contexte de l'application
-  const { appContext } = useAppContext() as Context;
+  const { appContext, setAppContext } = useAppContext() as Context;
+
   const navigate = useNavigate();
   const { slug, uuid, version } = useParams();
   const [reponse, setReponse] = useState<AnswerAPI | null>(null);
   const [locked, setLocked] = useState<boolean>(true);
-  const [isDirty, setDirty] = useState<boolean>(false);
-  const [showDialog, setShowDialog] = useState<boolean>(false);
 
   const stateRef = useRef<AnswerAPI | null>(null);
 
@@ -35,40 +33,6 @@ const IndexReponse = () => {
   const handleVersionChange = (ver: string) => {
     navigate(`/formulaire/${slug}/answers/${uuid}/${ver}`);
   };
-
-  const handleTouched = (isDirty: boolean) => {
-    setDirty(isDirty);
-  }
-
-  const blocker = useBlocker(() => {
-    if (isDirty) {
-      setShowDialog(true);
-      return true;
-    } else {
-      removeLock();
-      return false;
-    }
-  })
-
-  /**
-   * Suppression de l'éventuel verrou
-   */
-  const removeLock = () => {
-    if (reponse && reponse.lock && reponse.lock.utilisateur.id === appContext.user?.id) unlock(reponse.id);
-  }
-
-  /**
-   * Fermeture du composant
-   *    - suppresion d'éventuel verrou
-   *    - vérification de l'enregistrement
-   */
-  const unMountComponent = (val: boolean) => {
-    setShowDialog(false);
-    if (val) {
-      removeLock();
-      if (blocker.state === "blocked") blocker.proceed();
-    } else blocker.state === "unblocked";
-  }
 
   // query de récupération de la réponse à afficher
   const { error, data, isError, isLoading, isSuccess, refetch } = useQuery({
@@ -107,16 +71,26 @@ const IndexReponse = () => {
 
     return () => {
       window.removeEventListener("beforeunload", handleTabClose);
+      if (stateRef.current) {
+        console.log(stateRef.current.lock.utilisateur.id, appContext.user?.id);
+      }
+      if (stateRef.current && stateRef.current.lock && stateRef.current.lock.utilisateur.id === appContext.user?.id) {
+        unlock(stateRef.current.id);
+      }
     };
   }, []);
 
   /**
-   * Gestion du changement de version lors de la mise à jour des données
-   * @param ver string - version de la réponse
+   * Mise à jour de la réponse
+   * @param updatedAnswer AnswerAPI - réponse mise à jour
    */
-  const handleUpdated = (ver: number) => {
-    if (ver.toString() !== version) handleVersionChange(ver.toString());
-    else refetch();
+  const handleUpdated = (updatedAnswer: AnswerAPI) => {
+    if (updatedAnswer.version.toString() !== version) handleVersionChange(updatedAnswer.version.toString());
+    else {
+      setReponse(updatedAnswer);
+      setLocked(updatedAnswer.lock && updatedAnswer.lock.utilisateur.id !== appContext.user?.id);
+      stateRef.current = updatedAnswer;
+    };
   };
 
   // Affichage lors du chargement des données
@@ -132,7 +106,7 @@ const IndexReponse = () => {
     );
 
   // Affichage de l'erreur
-  if (isError) return <ErrorAlert error={error} />;
+  if (isError) setAppContext({...appContext, alerte: { severite: "error", message: manageError(error)}});
 
   // Affichage du composant
   if (isSuccess && reponse && version) {
@@ -151,8 +125,7 @@ const IndexReponse = () => {
         {reponse.courante && reponse.lock !== null && reponse.lock.utilisateur.id !== appContext.user?.id && (
           <Alert severity="warning">{`${reponse.lock.utilisateur.prenom} ${reponse.lock.utilisateur.nom} a verouillé la réponse`}</Alert>
         )}
-        <UpdateForm courante={reponse.courante} locked={locked} answer={reponse} onUpdated={(ver: number) => handleUpdated(ver)} onTouched={handleTouched}/>
-        <QuitConfirmDialog show={showDialog} confirmQuit={unMountComponent} />
+        <UpdateForm courante={reponse.courante} locked={locked} answer={reponse} onUpdated={handleUpdated} />
       </Paper>
     );
   }

@@ -1,12 +1,15 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { sfAnd, sfEqual } from "spring-filter-query-builder";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
+import { Context } from "gec-tripetto";
 import { formatDateTime } from "../../utils/format";
 import { getAnswers } from "../../utils/apiCall";
-import ErrorAlert from "../ErrorAlert";
-import { useEffect, useState } from "react";
+import manageError from "../../utils/manageError";
+import { useAppContext } from "../../utils/appContext";
+
 
 interface Value {
   prenom: string;
@@ -15,6 +18,9 @@ interface Value {
 }
 
 const Createur = () => {
+  // Chargement des données du Contexte de l'application
+  const { appContext, setAppContext } = useAppContext() as Context;
+  
   // récupération du paramètre de la page: identifiant de la série de réponses
   const { uuid } = useParams();
 
@@ -43,7 +49,7 @@ const Createur = () => {
 
   if (isLoading) return <Skeleton variant="text" sx={{ fontSize: "1rem" }} />;
 
-  if (isError) return <ErrorAlert error={error} />;
+  if (isError) setAppContext({...appContext, alerte: { severite: "error", message: manageError(error)}});
 
   if (isSuccess && value)
     return (

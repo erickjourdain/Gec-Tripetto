@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useBlocker } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -6,12 +6,13 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
 import { Typography } from "@mui/material";
+import { Context } from "gec-tripetto";
+import { getCurrentUser } from "../utils/apiCall";
+import { useAppContext } from "../utils/appContext";
 import Menu from "../components/Menu";
 import Sidebar from "../components/Sidebar";
-import { useAppContext } from "../utils/appContext";
-// import { Context } from "../@types/context";
-import { getCurrentUser } from "../utils/apiCall";
-import { Context } from "gec-tripetto";
+import MessageInfo from "../components/MessageInfo";
+import QuitConfirmDialog from "../components/QuitConfirmDialog";
 
 const drawerWidth: number = 240;
 const defaultTheme = createTheme();
@@ -32,7 +33,9 @@ const Layout = () => {
   const { appContext, setAppContext } = useAppContext() as Context;
 
   // Création état local pour affichage du menu latéral
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState<boolean>(true);
+  // Création état local pour affichage boite dialogue de confirmation de changement de page
+  const [showQuitDialog, setQuitDialog] = useState<boolean>(false); 
 
   // Chargement de l'utilisateur courant
   const {
@@ -48,6 +51,13 @@ const Layout = () => {
     refetchOnWindowFocus: false,
   });
 
+  let blocker = useBlocker(() => {
+    if (appContext.changement) {
+      setQuitDialog(true);
+      return true;
+    } else return false;
+  })
+
   // Enregistrement des données utilisateurs dans le contexte de l'application
   useEffect(() => {
     if (isSuccess) {
@@ -61,7 +71,21 @@ const Layout = () => {
   // Gestion de la mise à jour de l'état d'affichage du menu latéral
   const handleToogleDrawer = () => {
     setOpen(!open);
-  };
+  };  
+
+/**
+ * Confirmation de la navigation vers une autre page
+ * @param val boolean - valeur retournée par la boite de dialogue de confirmation
+ */
+ const confirmNavigation = (val: boolean) => {
+   setQuitDialog(false);
+   if (val) {
+     if (blocker.state === "blocked") {
+      setAppContext({...appContext, changement: false});
+      blocker.proceed();
+     }
+   } else blocker.state === "unblocked";
+ }
 
   // Erreur lors du chargement de l'utilisateur retour vers la page de login
   if (isError) return <Navigate to="/login" />;
@@ -87,6 +111,8 @@ const Layout = () => {
             </Container>
           </Box>
         </MainBox>
+        <MessageInfo />
+        <QuitConfirmDialog show={showQuitDialog} confirmQuit={confirmNavigation} />
       </ThemeProvider>
     );
   else return (
