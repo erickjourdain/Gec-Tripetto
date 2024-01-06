@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useOutletContext, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import Alert from "@mui/material/Alert";
-import { AlertTitle } from "@mui/material";
-import { Form } from "gec-tripetto";
+import Skeleton from "@mui/material/Skeleton";
+import { Context, Form } from "gec-tripetto";
+import { useAppContext } from "../utils/appContext";
 import { getForm } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 import CardForm from "../components/CardForm";
@@ -19,8 +19,9 @@ type ContextType = {
  * @returns JSX
  */
 const IndexForm = () => {
+  const { appContext, setAppContext } = useAppContext() as Context;
+  
   const [form, setForm] = useState<Form | null>(null);
-  const [customError, setCustomError] = useState<Error | null>(null);
 
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const IndexForm = () => {
     if (formData)
       switch (formData.data.nombreFormulaires) {
         case 0:
-          setCustomError(new Error("Aucun formulaire trouvé"));
+          setAppContext({ ...appContext, alerte: { severite: "warning", message: "Aucun formulaire trouvé" } });
           break;
         case 1:
           setForm({
@@ -56,15 +57,21 @@ const IndexForm = () => {
       }
     else setForm(null);
   }, [formData]);
+  // gestion des erreurs de chargement des données
+  useEffect(() => {
+    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+  }, [isError]);
 
-  if (isLoading) return <div className="loading">Chargement des données...</div>;
-
-  if (isError || customError)
+  // Affichage lors du chargement des données
+  if (isLoading)
     return (
-      <Alert severity="warning">
-        <AlertTitle>Impossible de charger le formulaire demandé!</AlertTitle>
-        {manageError(error || customError)}
-      </Alert>
+      <>
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+      </>
     );
 
   if (form)

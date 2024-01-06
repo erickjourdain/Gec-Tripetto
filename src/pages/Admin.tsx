@@ -14,11 +14,15 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Typography from "@mui/material/Typography";
 import TableHead from "@mui/material/TableHead";
-import { User } from "gec-tripetto";
+import { Context, User } from "gec-tripetto";
 import { getUsers } from "../utils/apiCall";
+import { useAppContext } from "../utils/appContext";
+import manageError from "../utils/manageError";
 
 const Admin = () => {
   const itemsPerPage = 5;
+  
+  const { appContext, setAppContext } = useAppContext() as Context;
   const navigate = useNavigate();
 
   // State: page du tableau
@@ -28,7 +32,7 @@ const Admin = () => {
   // State: nombre utilisateurs
   const [nbUsers, setNbUsers] = useState<number>(0);
 
-  const { data, isError, isLoading } = useQuery({
+  const { data, error, isError, isLoading } = useQuery({
     queryKey: ["users", page],
     queryFn: () => getUsers(null, ["id", "prenom", "nom", "valide", "role", "bloque", "slug"], page + 1, itemsPerPage),
     refetchOnWindowFocus: false,
@@ -38,6 +42,11 @@ const Admin = () => {
     setUsers(data?.data.data);
     setNbUsers(data?.data.nombreUsers);
   }, [data]);
+
+  // gestion des erreurs de chargement des données
+  useEffect(() => {
+    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+  }, [isError]);
 
   // Gestion du changement de page du tableau de résultat
   const handleChangePage = (_event: unknown, newPage: number) => {

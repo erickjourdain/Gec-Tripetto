@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Context } from "gec-tripetto";
 import { useAppContext } from "./utils/appContext";
 import { setAuthorisation } from "./utils/apiCall";
-import { isCreator } from "./utils/auth";
+import { isAdmin, isCreator } from "./utils/auth";
 import Layout from "./pages/Layout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -48,11 +48,11 @@ function App() {
           children: [
             {
               index: true,
-              element: <Admin />,
+              element: isAdmin() ? <Admin /> : <NotAllowed />,
             },
             {
               path: "user/:slug",
-              element: <UserForm/>
+              element: isAdmin() ? <UserForm /> : <NotAllowed />,
             }
           ]
         },
@@ -67,7 +67,7 @@ function App() {
           children: [
             {
               path: "edit",
-              element: appContext.user?.role === isCreator() ? <EditForm /> : <NotAllowed />,
+              element: isCreator() ? <EditForm /> : <NotAllowed />,
             },
             {
               path: "play",

@@ -10,7 +10,6 @@ import { getAnswers } from "../../utils/apiCall";
 import manageError from "../../utils/manageError";
 import { useAppContext } from "../../utils/appContext";
 
-
 interface Value {
   prenom: string;
   nom: string;
@@ -46,10 +45,12 @@ const Createur = () => {
         createdAt: formatDateTime(data.data.data[0].createdAt),
       });
   }, [data]);
+  // gestion des erreurs de chargement des données
+  useEffect(() => {
+    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+  }, [isError]);
 
   if (isLoading) return <Skeleton variant="text" sx={{ fontSize: "1rem" }} />;
-
-  if (isError) setAppContext({...appContext, alerte: { severite: "error", message: manageError(error)}});
 
   if (isSuccess && value)
     return (

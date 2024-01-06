@@ -7,10 +7,11 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { FormAnswers } from "gec-tripetto";
+import { Context, FormAnswers } from "gec-tripetto";
 import { saveAnswer } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 import { formTripettoAnswers } from "../utils/format";
+import { useAppContext } from "../utils/appContext";
 import { useFormulaire } from "../pages/IndexForm";
 import PlayTripetto from "./PlayTripetto";
 import ResultsTable from "./ResultsTable";
@@ -22,6 +23,8 @@ type PlayFormProps = {
 
 const PlayForm = ({ open }: PlayFormProps) => {
   const navigate = useNavigate();
+  // Chargement des données du Contexte de l'application
+  const { appContext, setAppContext } = useAppContext() as Context;
 
   // récupération du formulaire de qualification
   const { form } = useFormulaire();
@@ -29,8 +32,6 @@ const PlayForm = ({ open }: PlayFormProps) => {
   const [reponses, setReponses] = useState<Export.IExportables | null>(null);
   // State: réponses formatées
   const [formattedReponses, setFormattedReponses] = useState<FormAnswers[]>([]);
-  // State: gestion des erreurs
-  const [erreur, setErreur] = useState<String | null>(null);
   // State: boite de dialogue formulaire
   const [dialog, setDialog] = useState(false);
   // State: avancement
@@ -57,8 +58,13 @@ const PlayForm = ({ open }: PlayFormProps) => {
 
   const { mutate } = useMutation({
     mutationFn: saveAnswer,
-    onSuccess: () => navigate({ pathname: "../answers" }),
-    onError: (error) => setErreur(manageError(error)),
+    onSuccess: () => {
+      setAppContext({...appContext, alerte: { severite: "success", message: "Les données ont été sauvegardées" }});
+      navigate({ pathname: "../answers" });
+    },
+    onError: (error: Error) => {
+      setAppContext({...appContext, alerte: { severite: "danger", message: manageError(error) }});
+    },
   });
 
   const save = () => {
@@ -80,9 +86,6 @@ const PlayForm = ({ open }: PlayFormProps) => {
           >
             <Box sx={{ minWidth: 400, maxWidth: "80%", margin: "auto" }}>
               <ResultsTable reponses={formattedReponses} />
-              <Typography variant="inherit" color="error">
-                {erreur}
-              </Typography>
               <Stack direction="row" spacing={2} sx={{ paddingBottom: "10px" }}>
                 <Button variant="contained" color="primary" onClick={save}>
                   Enregistrer

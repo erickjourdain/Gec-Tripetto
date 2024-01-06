@@ -4,11 +4,13 @@ import { useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
+import { Context } from "gec-tripetto";
 import { updateForm } from "../utils/apiCall";
+import manageError from "../utils/manageError";
+import { useAppContext } from "../utils/appContext";
+import { useFormulaire } from "../pages/IndexForm";
 import PlayTripetto from "./PlayTripetto";
 import FormInputs from "./FormInputs";
-import manageError from "../utils/manageError";
-import { useFormulaire } from "../pages/IndexForm";
 
 // définition du type pour la mise à jour des données
 type UpdateFormValues = {
@@ -22,29 +24,28 @@ type UpdateFormValues = {
 type State = {
   updateFormulaire: boolean;
   formulaire: string;
-  error: string | null;
 };
 
 //const EditForm = ({ onFinish }: EditFormProps) => {
 const EditForm = () => {
   const navigate = useNavigate();
+  // Chargement des données du Contexte de l'application
+  const { appContext, setAppContext } = useAppContext() as Context;
 
   // récupération du formulaire à mettre à jour via le contexte de la route
   const { form, setForm } = useFormulaire();
 
   // définition de l'état du composant pour gestion de la MAJ des données
   // du formulaire Tripetto
-  const [state, setState] = useState<State>({
-    updateFormulaire: false,
-    formulaire: "",
-    error: null,
-  });
+  const [updated, setUpdated] = useState<boolean>(false);
+  const [formulaire, setFormulaire] = useState<string>("");
   const [dialog, setDialog] = useState(false);
 
   // définition de la requête de mise à jour du formulaire
   const { mutate } = useMutation({
     mutationFn: updateForm,
     onSuccess: (response) => {
+      setAppContext({...appContext, alerte: { severite: "success", message: "Les données ont été mises à jour" }});
       if (form && form.slug !== response.data.slug) {
         navigate(`/formulaire/${response.data.slug}`);
       } else {
@@ -55,11 +56,8 @@ const EditForm = () => {
         navigate({ pathname: "../" });
       }
     },
-    onError: (error) => {
-      setState({
-        ...state,
-        error: manageError(error),
-      });
+    onError: (error: Error) => {
+      setAppContext({...appContext, alerte: { severite: "danger", message: manageError(error) }});
     },
   });
 
@@ -82,7 +80,7 @@ const EditForm = () => {
           }
           break;
       }
-      if (state.updateFormulaire) {
+      if (updated) {
         value.formulaire = data.formulaire;
       }
       if (!isEmpty(value)) {
@@ -112,29 +110,21 @@ const EditForm = () => {
               onSubmit={onSubmit}
               onFinish={() => navigate({ pathname: "../" })}
               onUpdateFormulaire={(val: boolean) => {
-                setState({
-                  ...state,
-                  updateFormulaire: val,
-                });
+                setUpdated(val);
               }}
               onTestFormulaire={(val: string) => {
-                setState({
-                  ...state,
-                  formulaire: val,
-                });
+                setFormulaire(val);
                 setDialog(true);
               }}
-              error={state.error}
             />
           </Box>
         </Paper>
-        {state.formulaire.trim() !== "" &&
+        {formulaire.trim() !== "" &&
           <PlayTripetto
             open={dialog}
             onClose={() => setDialog(false)}
-            form={JSON.parse(state.formulaire)}
+            form={JSON.parse(formulaire)}
             onSubmit={() => {
-              setState({ ...state });
               setDialog(false);
               return true;
             }}

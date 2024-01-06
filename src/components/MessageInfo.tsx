@@ -24,8 +24,8 @@ const MessageInfo = () => {
   };
 
   return ( appContext.alerte &&
-    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-      <Alert onClose={handleClose} severity={appContext.alerte.severite} sx={{ width: "100%" }}>
+    <Snackbar open={open} autoHideDuration={2000} onClose={handleClose} anchorOrigin={{horizontal: "center", vertical: "top"}}>
+      <Alert onClose={handleClose} severity={appContext.alerte.severite} sx={{ width: "100%" }} >
         {appContext.alerte.message}
       </Alert>
     </Snackbar>

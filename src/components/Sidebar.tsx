@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { styled } from "@mui/material/styles";
@@ -11,16 +11,16 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Alert from "@mui/material/Alert";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import { Form } from "gec-tripetto";
-import Search from "./Search";
+import { Context, Form } from "gec-tripetto";
 import { getForms } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 import { isCreator } from "../utils/auth";
+import { useAppContext } from "../utils/appContext";
+import Search from "./Search";
 
 // Définition du type des "props" attendus par le composant
 type SidebarProps = {
@@ -75,6 +75,8 @@ const Drawer = styled(MuiDrawer, {
  * @returns JSX
  */
 const Sidebar = ({ open, drawerwidth, onToggleDrawer }: SidebarProps) => {
+  const { appContext, setAppContext } = useAppContext() as Context;
+  
   // hook de navigation
   const navigate = useNavigate();
 
@@ -97,6 +99,10 @@ const Sidebar = ({ open, drawerwidth, onToggleDrawer }: SidebarProps) => {
     refetchOnWindowFocus: false,
   });
 
+  // gestion des erreurs de chargement des données
+  useEffect(() => {
+    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+  }, [isError]);
   // naviguation vers la page d'ajout d'un formulaire
   const addForm = () => {
     navigate("/ajouter");
@@ -111,14 +117,6 @@ const Sidebar = ({ open, drawerwidth, onToggleDrawer }: SidebarProps) => {
       selectedForm: null,
     });
   };
-
-  // affichage erreur en cas d'erreur de chargement des formulaires
-  if (isError)
-    return (
-      <Alert variant="filled" severity="error">
-        {manageError(error)}
-      </Alert>
-    );
 
   // définition du composant
   return (

@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
 import Paper from "@mui/material/Paper";
-import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
-import { FormAnswers } from "gec-tripetto";
+import Skeleton from "@mui/material/Skeleton";;
+import Button from "@mui/material/Button";
+import { FormAnswers, Context } from "gec-tripetto";
 import { getAnswer } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 import { formTripettoAnswers, formatDateTime } from "../utils/format";
+import { useFormulaire } from "../pages/IndexForm"
+import { useAppContext } from "utils/appContext";
 import ResultsTable from "./ResultsTable";
-import { useFormulaire } from "../pages/IndexForm";
-import Button from "@mui/material/Button";
 import PlayTripetto from "./PlayTripetto";
 
 // définition du type pour les Props du composant
@@ -26,8 +26,11 @@ type Workflow = "termine" | "modification";
  * @returns JSX
  */
 const ResultForm = ({ answer }: ResultFormProps) => {
+  const { appContext, setAppContext } = useAppContext() as Context;
+
   // récupération du formulaire de qualification
   const { form } = useFormulaire();
+
   // State: avancement
   const [workflow, setWorkflow] = useState<Workflow>("termine");
   // State: réponses formatées
@@ -51,24 +54,24 @@ const ResultForm = ({ answer }: ResultFormProps) => {
     const data = form && reponse ? formTripettoAnswers(form, JSON.parse(reponse?.data.reponse)) : [];
     setFormattedReponses(data);
   }, [reponse]);
+  // gestion des erreurs de chargement des données
+  useEffect(() => {
+    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+  }, [isError]);
 
-  // affichage loading
+  // Affichage lors du chargement des données
   if (isLoading)
     return (
-      <Box sx={{ display: "flex" }}>
-        <CircularProgress />
-      </Box>
+      <>
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+      </>
     );
 
-  // affichage erreur en cas d'erreur de chargement des formulaires
-  if (isError)
-    return (
-      <Alert variant="filled" severity="error">
-        {manageError(error)}
-      </Alert>
-    );
-
-  if(reponse) return (
+  if (reponse) return (
     <Paper
       sx={{
         marginTop: "10px",
@@ -108,8 +111,8 @@ const ResultForm = ({ answer }: ResultFormProps) => {
           </>
         )}
         {workflow === "modification" && form && form?.formulaire && (
-          <div style={{width: "100%"}}>
-            <PlayTripetto open={dialog} onClose={ () => setDialog(false)} form={form?.formulaire} data={JSON.parse(reponse.data.donnees)}/>
+          <div style={{ width: "100%" }}>
+            <PlayTripetto open={dialog} onClose={() => setDialog(false)} form={form?.formulaire} data={JSON.parse(reponse.data.donnees)} />
           </div>
         )}
       </Box>

@@ -5,17 +5,12 @@ import { useMutation } from "@tanstack/react-query";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { FormCreation } from "gec-tripetto";
-import FormInputs from "../components/FormInputs";
-import PlayTripetto from "../components/PlayTripetto";
+import { Context, FormCreation } from "gec-tripetto";
 import { createForm } from "../utils/apiCall";
 import manageError from "../utils/manageError";
-
-// définition du type pour la gestion de l'état local
-type State = {
-  formulaire: string;
-  error: string | null;
-};
+import { useAppContext } from "../utils/appContext";
+import FormInputs from "../components/FormInputs";
+import PlayTripetto from "../components/PlayTripetto";
 
 /**
  *
@@ -23,26 +18,23 @@ type State = {
  */
 const AddForm = () => {
   const navigate = useNavigate();
+  // Chargement des données du Contexte de l'application
+  const { appContext, setAppContext } = useAppContext() as Context;
 
   // définition de l'état du composant pour gestion de la MAJ des données
   // du formulaire Tripetto
-  const [state, setState] = useState<State>({
-    formulaire: "",
-    error: null,
-  });
+  const [state, setState] = useState<string>("");
   const [dialog, setDialog] = useState(false);
 
   // définition de la requête de création du formulaire
   const { mutate } = useMutation({
     mutationFn: createForm,
     onSuccess: (response) => {
+      setAppContext({...appContext, alerte: { severite: "success", message: "Les données ont été sauvegardées" }});
       navigate(`/formulaire/${response.data.slug}`);
     },
-    onError: (error) => {
-      setState({
-        ...state,
-        error: manageError(error),
-      });
+    onError: (error: Error) => {
+      setAppContext({...appContext, alerte: { severite: "danger", message: manageError(error) }});
     },
   });
 
@@ -71,23 +63,19 @@ const AddForm = () => {
             }}
             onSubmit={onSubmit}
             onTestFormulaire={(val: string) => {
-              setState({
-                ...state,
-                formulaire: val,
-              });
+              setState(val);
               setDialog(true);
             }}
-            error={state.error}
           />
         </Box>
       </Paper>
-      {state.formulaire.trim() !== "" &&
+      {state.trim() !== "" &&
         <PlayTripetto
           open={dialog}
           onClose={() => setDialog(false)}
-          form={JSON.parse(state.formulaire)}
+          form={JSON.parse(state)}
           onSubmit={() => {
-            setState({ ...state });
+            //setState({ ...state });
             setDialog(false);
             return true;
           }}

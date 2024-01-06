@@ -7,13 +7,10 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import CardHeader from "@mui/material/CardHeader";
 import red from "@mui/material/colors/red";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import SmartDisplayIcon from "@mui/icons-material/SmartDisplay";
-import FindInPageIcon from "@mui/icons-material/FindInPage";
+import Button from "@mui/material/Button";
 import { Form } from "gec-tripetto";
+import { isCreator } from "../utils/auth";
 import { formatDate } from "../utils/format";
-import { isAdmin } from "../utils/auth";
 
 const Header = styled(
   CardHeader,
@@ -37,19 +34,8 @@ const CardForm = ({ form, onAction }: CardFormProps) => {
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="createur">
-              {form.createur?.prenom
-                .charAt(0)
-                .toLocaleUpperCase()
-                .concat(form.createur?.nom.charAt(0).toLocaleUpperCase())}
+              {form.titre.charAt(0).toLocaleUpperCase()}
             </Avatar>
-          }
-          action={
-            isAdmin() &&
-            onAction && (
-              <IconButton aria-label="settings" onClick={() => onAction("edit")}>
-                <EditIcon />
-              </IconButton>
-            )
           }
           title={form.titre?.toUpperCase()}
           subheader={`v${form.version} du ${formatDate(form.createdAt)}`}
@@ -61,12 +47,17 @@ const CardForm = ({ form, onAction }: CardFormProps) => {
         </CardContent>
         {onAction && (
           <CardActions disableSpacing>
-            <IconButton aria-label="lancer formulaire" onClick={() => onAction("play")}>
-              <SmartDisplayIcon />
-            </IconButton>
-            <IconButton aria-label="voir résultats" onClick={() => onAction("answers")}>
-              <FindInPageIcon />
-            </IconButton>
+            <Button aria-label="lancer formulaire" onClick={() => onAction("play")} size="small">
+              jouer
+            </Button>
+            <Button aria-label="voir réponses" onClick={() => onAction("answers")} size="small">
+              réponses
+            </Button>
+            {isCreator() && 
+              <Button aria-label="éditer" onClick={() => onAction("edit")} size="small">
+                éditer
+              </Button>
+            }
           </CardActions>
         )}
       </Card>

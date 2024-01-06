@@ -35,7 +35,7 @@ const IndexReponse = () => {
   };
 
   // query de récupération de la réponse à afficher
-  const { error, data, isError, isLoading, isSuccess, refetch } = useQuery({
+  const { error, data, isError, isLoading, isSuccess } = useQuery({
     queryKey: ["getAnswersUpdateForm", uuid, version],
     queryFn: () => {
       if (uuid === undefined || version === undefined) return Promise.resolve(null);
@@ -59,6 +59,11 @@ const IndexReponse = () => {
       stateRef.current = rep;
     }
   }, [data]);
+  // gestion des erreurs de chargement des données
+  useEffect(() => {
+    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+  }, [isError]);
+  // gestion de la fermeture de la fenêtre et du déchargement du composant
   useEffect(() => {
     const handleTabClose = (() => {
       if (stateRef.current && stateRef.current.lock && stateRef.current.lock.utilisateur.id === appContext.user?.id) {
@@ -71,9 +76,6 @@ const IndexReponse = () => {
 
     return () => {
       window.removeEventListener("beforeunload", handleTabClose);
-      if (stateRef.current) {
-        console.log(stateRef.current.lock.utilisateur.id, appContext.user?.id);
-      }
       if (stateRef.current && stateRef.current.lock && stateRef.current.lock.utilisateur.id === appContext.user?.id) {
         unlock(stateRef.current.id);
       }
@@ -104,9 +106,6 @@ const IndexReponse = () => {
         <Skeleton variant="text" />
       </>
     );
-
-  // Affichage de l'erreur
-  if (isError) setAppContext({...appContext, alerte: { severite: "error", message: manageError(error)}});
 
   // Affichage du composant
   if (isSuccess && reponse && version) {

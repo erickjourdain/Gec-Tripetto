@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -12,8 +13,10 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { Role, User } from "gec-tripetto";
+import { Context, Role, User } from "gec-tripetto";
 import { updateUser } from "../../utils/apiCall";
+import { useAppContext } from "../../utils/appContext";
+import manageError from "../../utils/manageError";
 
 type IFormInputs = {
   prenom: string;
@@ -26,12 +29,12 @@ type IFormInputs = {
 
 type UpdateFormProps = {
   user: User;
-  onError: (error: Error) => void;
-  onSaved: () => void
+  onUpdated: (newUser: User) => void;
 };
 
-const UpdateForm = ({ user, onError, onSaved }: UpdateFormProps) => {
+const UpdateForm = ({ user, onUpdated }: UpdateFormProps) => {
   const roles = ["ADMIN", "CREATOR", "CONTRIBUTOR", "USER", "READER"];
+  const { appContext, setAppContext } = useAppContext() as Context;
 
   // Définition des éléments pour la validation du formulaire
   const {
@@ -40,7 +43,6 @@ const UpdateForm = ({ user, onError, onSaved }: UpdateFormProps) => {
     handleSubmit,
     register,
     reset,
-    setValue,
   } = useForm<IFormInputs>({
     defaultValues: {
       prenom: user.nom,
@@ -65,8 +67,13 @@ const UpdateForm = ({ user, onError, onSaved }: UpdateFormProps) => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: updateUser,
-    onSuccess: onSaved,
-    onError: (error: Error) => onError(error),
+    onSuccess: (rep: AxiosResponse) => {
+      setAppContext({...appContext, alerte: { severite: "success", message: "Les données ont été mises à jour" }});
+      onUpdated(rep.data);
+    },
+    onError: (error: Error) => {
+      setAppContext({...appContext, alerte: { severite: "danger", message: manageError(error) }});
+    },
   });
 
   const onSubmit = (data: IFormInputs) => {

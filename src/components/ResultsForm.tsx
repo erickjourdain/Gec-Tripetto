@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { sfAnd, sfEqual } from "spring-filter-query-builder";
-import Alert from "@mui/material/Alert";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -10,13 +9,14 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
-import CircularProgress from "@mui/material/CircularProgress";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { AnswerAPI, User } from "gec-tripetto";
+import Skeleton from "@mui/material/Skeleton";
+import { AnswerAPI, Context, User } from "gec-tripetto";
 import { useFormulaire } from "../pages/IndexForm";
 import manageError from "../utils/manageError";
 import { getAnswers } from "../utils/apiCall";
 import { formatDateTime } from "../utils/format";
+import { useAppContext } from "../utils/appContext";
 import SearchUser from "./SearchUser";
 
 /**
@@ -24,6 +24,8 @@ import SearchUser from "./SearchUser";
  * @returns JSX
  */
 const ResultsForm = () => {
+  const { appContext, setAppContext } = useAppContext() as Context;
+  
   const navigate = useNavigate();
   // récupération du formulaire via le contexte de la route
   const { form } = useFormulaire();
@@ -46,26 +48,27 @@ const ResultsForm = () => {
     },
     refetchOnWindowFocus: false,
   });
+  
+  // gestion des erreurs de chargement des données
+  useEffect(() => {
+    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+  }, [isError]);
 
   // mise à jour de l'utilisateur sélectionné
   const onUserChange = (newUser: User | null) => {
     setUser(newUser);
   };
 
-  // affichage loading
+  // Affichage lors du chargement des données
   if (isLoading)
     return (
-      <Box sx={{ display: "flex" }}>
-        <CircularProgress />
-      </Box>
-    );
-
-  // affichage erreur en cas d'erreur de chargement des formulaires
-  if (isError)
-    return (
-      <Alert variant="filled" severity="error">
-        {manageError(error)}
-      </Alert>
+      <>
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" />
+      </>
     );
 
   return (

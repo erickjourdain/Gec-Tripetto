@@ -27,7 +27,6 @@ type FormInputsProps = {
   onFinish?: () => void;
   onUpdateFormulaire?: (val: boolean) => void;
   onTestFormulaire: (formulaire: string) => void;
-  error: null | string;
 };
 
 // définition du type pour la gestion de l'état local
@@ -41,7 +40,7 @@ type State = {
  * @param props FormInputsProps
  * @returns JSX
  */
-const FormInputs = ({ form, onSubmit, onFinish, onUpdateFormulaire, onTestFormulaire, error }: FormInputsProps) => {
+const FormInputs = ({ form, onSubmit, onFinish, onUpdateFormulaire, onTestFormulaire }: FormInputsProps) => {
   // définition de l'état du composant pour gestion de la MAJ des données
   // du formulaire Tripetto
   const [state, setState] = useState<State>({
@@ -51,14 +50,6 @@ const FormInputs = ({ form, onSubmit, onFinish, onUpdateFormulaire, onTestFormul
 
   // définition du texte du bouton de sauvegarde en fonction du contexte
   const btnSauvegarde = onUpdateFormulaire === undefined ? "Enregistrer" : "Mettre à jour";
-
-  // suivi de l'évolution de la props "error"
-  useEffect(() => {
-    if (error) {
-      setError("root", { type: "mutation", message: error });
-    } else clearErrors("root");
-  }, [error]);
-
 
   // validation du formulaire Tripetto
   const validateFormulaire = (value: string) => {

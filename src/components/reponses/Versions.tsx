@@ -56,7 +56,11 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
       const queryClient = new QueryClient();
       queryClient.removeQueries({ queryKey: ["getAnswersVersion"] });
     }
-  },[])
+  },[]);
+  // gestion des erreurs de chargement des données
+  useEffect(() => {
+    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+  }, [isError]);
 
   if (isLoading)
     return (
@@ -64,8 +68,6 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
         <Skeleton variant="circular" width={40} height={40} />
       </Box>
     );
-
-  if (isError) setAppContext({...appContext, alerte: { severite: "error", message: manageError(error)}});
 
   if (isSuccess && versions.length > 0)
     return (

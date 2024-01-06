@@ -5,8 +5,10 @@ import { sfLike, sfOr } from "spring-filter-query-builder";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { User } from "gec-tripetto";
+import { Context, User } from "gec-tripetto";
 import { getUsers } from "../utils/apiCall";
+import { useAppContext } from "../utils/appContext";
+import manageError from "../utils/manageError";
 
 // définition du type pour les Props du composant
 type SearchUserProps = {
@@ -18,12 +20,14 @@ type SearchUserProps = {
  * @returns JSX
  */
 const SearchUser = ({ onUserChange }: SearchUserProps) => {
+  const { appContext, setAppContext } = useAppContext() as Context;
+  
   const [value, setValue] = useState<User | null>(null);
   const [search, setSearch] = useState<string | null>(null);
   const [options, setOptions] = useState<readonly User[]>([]);
 
   // query de récupération des utilisateurs
-  const { data, refetch, isError, isSuccess } = useQuery({
+  const { data, error, refetch, isError, isSuccess } = useQuery({
     queryKey: ["getUsers"],
     queryFn: () => {
       const filter = `filter=${sfOr([sfLike("nom",search ? search : ""),sfLike("prenom",search ? search : "")])}`;
@@ -41,6 +45,11 @@ const SearchUser = ({ onUserChange }: SearchUserProps) => {
     const users = isSuccess && data ? data.data.data : [];
     setOptions(users);
   }, [data]);
+
+  // gestion des erreurs de chargement des données
+  useEffect(() => {
+    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+  }, [isError]);
 
   return (
     <>
