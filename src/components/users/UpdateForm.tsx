@@ -45,8 +45,8 @@ const UpdateForm = ({ user, onUpdated }: UpdateFormProps) => {
     reset,
   } = useForm<IFormInputs>({
     defaultValues: {
-      prenom: user.nom,
-      nom: user.prenom,
+      prenom: user.prenom,
+      nom: user.nom,
       login: user.login,
       role: user.role,
       locked: user.locked,
@@ -56,8 +56,8 @@ const UpdateForm = ({ user, onUpdated }: UpdateFormProps) => {
 
   useEffect(() => {
     reset({
-      prenom: user.nom,
-      nom: user.prenom,
+      prenom: user.prenom,
+      nom: user.nom,
       login: user.login,
       role: user.role,
       locked: user.locked,
