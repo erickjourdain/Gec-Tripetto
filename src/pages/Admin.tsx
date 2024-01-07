@@ -34,7 +34,7 @@ const Admin = () => {
 
   const { data, error, isError, isLoading } = useQuery({
     queryKey: ["users", page],
-    queryFn: () => getUsers(null, ["id", "prenom", "nom", "valide", "role", "bloque", "slug"], page + 1, itemsPerPage),
+    queryFn: () => getUsers(null, ["id", "prenom", "nom", "validated", "role", "locked", "slug"], page + 1, itemsPerPage),
     refetchOnWindowFocus: false,
   });
 
@@ -97,8 +97,8 @@ const Admin = () => {
                   </TableCell>
                   <TableCell>{`${user.prenom} ${user.nom}`}</TableCell>
                   <TableCell>{user.role}</TableCell>
-                  <TableCell>{icon(user.valide)}</TableCell>
-                  <TableCell>{icon(user.bloque)}</TableCell>
+                  <TableCell>{icon(user.validated)}</TableCell>
+                  <TableCell>{icon(user.locked)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -6,8 +6,8 @@ export type User = {
   prenom: string;
   login: string;
   password?: string;
-  valide: boolean;
-  bloque: boolean;
+  validated: boolean;
+  locked: boolean;
   role: Role;
   slug?: string;
   createdAt?: string;

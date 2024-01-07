@@ -23,8 +23,8 @@ type IFormInputs = {
   nom: string;
   login: string;
   role: Role;
-  valide: boolean;
-  bloque: boolean;
+  validated: boolean;
+  locked: boolean;
 };
 
 type UpdateFormProps = {
@@ -33,7 +33,7 @@ type UpdateFormProps = {
 };
 
 const UpdateForm = ({ user, onUpdated }: UpdateFormProps) => {
-  const roles = ["ADMIN", "CREATOR", "CONTRIBUTOR", "USER", "READER"];
+  const roles = ["ADMIN", "CREATOR", "USER", "READER"];
   const { appContext, setAppContext } = useAppContext() as Context;
 
   // Définition des éléments pour la validation du formulaire
@@ -49,8 +49,8 @@ const UpdateForm = ({ user, onUpdated }: UpdateFormProps) => {
       nom: user.prenom,
       login: user.login,
       role: user.role,
-      bloque: user.bloque,
-      valide: user.valide,
+      locked: user.locked,
+      validated: user.validated,
     },
   });
 
@@ -60,19 +60,19 @@ const UpdateForm = ({ user, onUpdated }: UpdateFormProps) => {
       nom: user.prenom,
       login: user.login,
       role: user.role,
-      bloque: user.bloque,
-      valide: user.valide,
+      locked: user.locked,
+      validated: user.validated,
     });
   }, [user]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: updateUser,
     onSuccess: (rep: AxiosResponse) => {
-      setAppContext({...appContext, alerte: { severite: "success", message: "Les données ont été mises à jour" }});
+      setAppContext({ ...appContext, alerte: { severite: "success", message: "Les données ont été mises à jour" } });
       onUpdated(rep.data);
     },
     onError: (error: Error) => {
-      setAppContext({...appContext, alerte: { severite: "danger", message: manageError(error) }});
+      setAppContext({ ...appContext, alerte: { severite: "danger", message: manageError(error) } });
     },
   });
 
@@ -145,14 +145,14 @@ const UpdateForm = ({ user, onUpdated }: UpdateFormProps) => {
           </FormControl>
         </Box>
         <Controller
-          name="valide"
+          name="validated"
           control={control}
           render={({ field: { value, onChange } }) => (
             <FormControlLabel control={<Switch checked={value} onChange={onChange} />} label="validé" />
           )}
         />
         <Controller
-          name="bloque"
+          name="locked"
           control={control}
           render={({ field: { value, onChange } }) => (
             <FormControlLabel control={<Switch checked={value} onChange={onChange} />} label="bloqué" />

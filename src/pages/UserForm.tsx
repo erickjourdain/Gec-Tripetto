@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { sfEqual } from "spring-filter-query-builder";
 import Skeleton from "@mui/material/Skeleton";
@@ -11,8 +11,10 @@ import { getUsers } from "../utils/apiCall";
 import { useAppContext } from "../utils/appContext";
 import manageError from "../utils/manageError";
 import UpdateForm from "../components/users/UpdateForm";
+import Button from "@mui/material/Button";
 
 const UserForm = () => {
+  const navigate = useNavigate();
   // Chargement des données du Contexte de l'application
   const { appContext, setAppContext } = useAppContext() as Context;
   // Récupération des données de la route
@@ -70,6 +72,7 @@ const UserForm = () => {
         }}
       >
         <Box px={3} py={2}>
+          <Button onClick={() => navigate("/admin")}>Administration</Button>
           <Typography variant="h6" margin="dense">
             Profil {user.prenom} {user.nom}
           </Typography>
