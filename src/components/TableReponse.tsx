@@ -5,6 +5,8 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import TablePagination from "@mui/material/TablePagination";
+import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
+import Typography from "@mui/material/Typography";
 import { Answer, Form, FormAnswers } from "gec-tripetto";
 import { formTripettoAnswers, formatDate } from "../utils/format";
 
@@ -36,25 +38,40 @@ const TableReponse = ({ form, reponses }: TableReponseProps) => {
   };
 
   // mise en forme des réponses à afficher dans le tableau des résultats
-  const reponseString = (values: Answer[]) => {
-    if (values.length === 1) {
-      let val: string = "";
-      if (!values[0].value) return val;
-      switch (values[0].dataType) {
-        case "date":
-          val = formatDate(values[0].value as number);
-          break;
-        default:
-          val = values[0].value as string;
-          break;
-      }
-      return val;
-    } else {
-      const data = values.map((val) => {
-        if (val.value) return val.name;
-        else return `<s>${val.name}</s>`;
-      });
-      return `${data.join(" - ")}`;
+  const reponseString = (reponse: FormAnswers) => {
+    if (reponse.reponses.length === 0) return null;
+    switch (reponse.type) {
+      case "@tripetto/block-email":
+      case "@tripetto/block-text":
+      case "@tripetto/block-textarea":
+      case "@tripetto/block-number":
+      case "@tripetto/block-dropdown":
+      case "@tripetto/block-rating":
+      case "@tripetto/block-radiobuttons":
+        switch (reponse.reponses[0].dataType) {
+          case "date":
+            return <Typography>{formatDate(reponse.reponses[0].value as number)}</Typography>;
+          default:
+            return <Typography>{reponse.reponses[0].value}</Typography>;
+          case "@tripetto/block-yes-no":
+            switch (reponse.reponses[0].value) {
+              case "Yes":
+                return <Typography>oui</Typography>;
+              case "No":
+                return <Typography>non</Typography>;
+              default:
+                return <Typography></Typography>;
+            }
+        }
+      case "@tripetto/block-multi-select":
+        return (
+          <>
+            <Typography>{reponse.reponses.filter((rep: Answer) => rep.value).map((rep: Answer) => rep.name).join(" - ")}</Typography>
+            <Typography><s>{reponse.reponses.filter((rep: Answer) => !rep.value).map((rep: Answer) => rep.name).join(" - ")}</s></Typography>
+          </>
+        );
+      case "@tripetto/block-ranking":
+        return <Typography>{reponse.reponses.map((rep: Answer) => rep.value).join(" - ")}</Typography>;
     }
   };
 
@@ -77,19 +94,15 @@ const TableReponse = ({ form, reponses }: TableReponseProps) => {
                     {reponse.question ? reponse.question : reponse.reponses[0].name}
                   </TableCell>
                   <TableCell>
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: reponseString(reponse.reponses),
-                      }}
-                    />
+                    {
+                      (reponseString(reponse)) || <DoNotDisturbIcon color="warning" />
+                    }
                   </TableCell>
                   {formAnswers.length > 1 && (
                     <TableCell>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: reponseString(formAnswers[1][page * itemsPerPage + ind].reponses),
-                        }}
-                      />
+                      {
+                        (reponseString(formAnswers[1][page * itemsPerPage + ind])) || <DoNotDisturbIcon color="warning" />
+                      }
                     </TableCell>
                   )}
                 </TableRow>

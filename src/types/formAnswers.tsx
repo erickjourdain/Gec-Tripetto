@@ -4,11 +4,12 @@ export type Answer = {
   dataType: string;
   name: string;
   string: string;
-  value: TSerializeTypes
+  value: TSerializeTypes;
 }
 
 export type FormAnswers = {
   id: string;
   question: string;
+  type: string;
   reponses: Answer[];
 };
