@@ -55,8 +55,11 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
   const { mutate, isPending } = useMutation({
     mutationFn: updateAnswer,
     onSuccess: (rep: AxiosResponse) => {
-      setAppContext({ ...appContext, alerte: { severite: "success", message: "les modifications ont été enregsitrées" }, changement: false });
-      onUpdated(rep.data);
+      setAppContext({ ...appContext, changement: false });
+      setTimeout(() => {
+        setAppContext({ ...appContext, alerte: { severite: "success", message: "les modifications ont été enregsitrées" }});
+        onUpdated(rep.data);
+      }, 500);
     },
     onError(error) {
       setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });

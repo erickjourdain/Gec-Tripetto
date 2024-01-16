@@ -30,6 +30,7 @@ const TableReponse = ({ form, reponses }: TableReponseProps) => {
       answers.push(formTripettoAnswers(form, JSON.parse(reponses[index])));
     }
     setFormAnswers(answers);
+    console.log(answers);
   }, [reponses]);
 
   // Gestion du changement de page du tableau de résultat
@@ -48,22 +49,24 @@ const TableReponse = ({ form, reponses }: TableReponseProps) => {
       case "@tripetto/block-dropdown":
       case "@tripetto/block-rating":
       case "@tripetto/block-radiobuttons":
+      case "@tripetto/block-date": 
         switch (reponse.reponses[0].dataType) {
           case "date":
             return <Typography>{formatDate(reponse.reponses[0].value as number)}</Typography>;
           default:
             return <Typography>{reponse.reponses[0].value}</Typography>;
-          case "@tripetto/block-yes-no":
-            switch (reponse.reponses[0].value) {
-              case "Yes":
-                return <Typography>oui</Typography>;
-              case "No":
-                return <Typography>non</Typography>;
-              default:
-                return <Typography></Typography>;
-            }
+        }
+      case "@tripetto/block-yes-no":
+        switch (reponse.reponses[0].value) {
+          case "Yes":
+            return <Typography>oui</Typography>;
+          case "No":
+            return <Typography>non</Typography>;
+          default:
+            return <Typography></Typography>;
         }
       case "@tripetto/block-multi-select":
+      case "@tripetto/block-checkboxes":
         return (
           <>
             <Typography>{reponse.reponses.filter((rep: Answer) => rep.value).map((rep: Answer) => rep.name).join(" - ")}</Typography>

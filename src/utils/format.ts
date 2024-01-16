@@ -37,7 +37,7 @@ const formTripettoAnswers = (form: Form, exportables: Export.IExportables) => {
       }) as string;
       data.push({
         id: field.node.id,
-        question: get(form, deepPath.replace(".id", ".name")),
+        question: get(form, deepPath.replace(".id", ".name")) || get(form, deepPath.replace(".id", ".description")),
         type: field.type,
         reponses: [],
       });
