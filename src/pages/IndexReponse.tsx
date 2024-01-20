@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams, useBlocker } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useAtomValue, useSetAtom } from "jotai";
 import { sfAnd, sfEqual } from "spring-filter-query-builder";
 import Paper from "@mui/material/Paper";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
-import { AnswerAPI, Context } from "gec-tripetto";
-import { useAppContext } from "../utils/appContext";
+import { AnswerAPI } from "gec-tripetto";
+import { displayAlert, loggedUser } from "../atomState";
 import { getUniqueAnswer, unlockAnswer } from "../utils/apiCall";
 import Createur from "../components/reponses/Createur";
 import Versions from "../components/reponses/Versions";
@@ -16,8 +17,10 @@ import ExportExcel from "../components/reponses/ExportExcel";
 import manageError from "../utils/manageError";
 
 const IndexReponse = () => {
-  // Chargement des données du Contexte de l'application
-  const { appContext, setAppContext } = useAppContext() as Context;
+  // Chargement de l'état Atom des alertes
+  const setAlerte = useSetAtom(displayAlert);
+  // Chargement de l'état Atom de l'utilisateur
+  const user = useAtomValue(loggedUser);
 
   const navigate = useNavigate();
   const { slug, uuid, version } = useParams();
@@ -55,18 +58,18 @@ const IndexReponse = () => {
     if (data && isSuccess) {
       const rep = data.data as AnswerAPI;
       setReponse(rep);
-      setLocked(rep.lock && rep.lock.utilisateur.id !== appContext.user?.id);
+      setLocked(rep.lock && rep.lock.utilisateur.id !== user?.id);
       stateRef.current = rep;
     }
   }, [data]);
   // gestion des erreurs de chargement des données
   useEffect(() => {
-    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+    if (isError) setAlerte({ severite: "error", message: manageError(error) });
   }, [isError]);
   // gestion de la fermeture de la fenêtre et du déchargement du composant
   useEffect(() => {
     const handleTabClose = (() => {
-      if (stateRef.current && stateRef.current.lock && stateRef.current.lock.utilisateur.id === appContext.user?.id) {
+      if (stateRef.current && stateRef.current.lock && stateRef.current.lock.utilisateur.id === user?.id) {
         unlockAnswer(stateRef.current.id);
       }
     });
@@ -76,7 +79,7 @@ const IndexReponse = () => {
 
     return () => {
       window.removeEventListener("beforeunload", handleTabClose);
-      if (stateRef.current && stateRef.current.lock && stateRef.current.lock.utilisateur.id === appContext.user?.id) {
+      if (stateRef.current && stateRef.current.lock && stateRef.current.lock.utilisateur.id === user?.id) {
         unlock(stateRef.current.id);
       }
     };
@@ -90,7 +93,7 @@ const IndexReponse = () => {
     if (updatedAnswer.version.toString() !== version) handleVersionChange(updatedAnswer.version.toString());
     else {
       setReponse(updatedAnswer);
-      setLocked(updatedAnswer.lock && updatedAnswer.lock.utilisateur.id !== appContext.user?.id);
+      setLocked(updatedAnswer.lock && updatedAnswer.lock.utilisateur.id !== user?.id);
       stateRef.current = updatedAnswer;
     };
   };
@@ -121,7 +124,7 @@ const IndexReponse = () => {
           <Versions version={version} onVersionChange={handleVersionChange} />
           <ExportExcel />
         </Box>
-        {reponse.courante && reponse.lock !== null && reponse.lock.utilisateur.id !== appContext.user?.id && (
+        {reponse.courante && reponse.lock !== null && reponse.lock.utilisateur.id !== user?.id && (
           <Alert severity="warning">{`${reponse.lock.utilisateur.prenom} ${reponse.lock.utilisateur.nom} a verouillé la réponse`}</Alert>
         )}
         <UpdateForm courante={reponse.courante} locked={locked} answer={reponse} onUpdated={handleUpdated} />

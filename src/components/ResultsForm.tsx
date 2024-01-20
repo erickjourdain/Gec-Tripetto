@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import { sfAnd, sfEqual } from "spring-filter-query-builder";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -11,12 +12,12 @@ import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Skeleton from "@mui/material/Skeleton";
-import { AnswerAPI, Context, User } from "gec-tripetto";
+import { AnswerAPI, User } from "gec-tripetto";
+import { displayAlert } from "../atomState";
 import { useFormulaire } from "../pages/IndexForm";
 import manageError from "../utils/manageError";
 import { getAnswers } from "../utils/apiCall";
 import { formatDateTime } from "../utils/format";
-import { useAppContext } from "../utils/appContext";
 import SearchUser from "./SearchUser";
 
 /**
@@ -24,7 +25,7 @@ import SearchUser from "./SearchUser";
  * @returns JSX
  */
 const ResultsForm = () => {
-  const { appContext, setAppContext } = useAppContext() as Context;
+  const setAlerte = useSetAtom(displayAlert);
   
   const navigate = useNavigate();
   // récupération du formulaire via le contexte de la route
@@ -51,7 +52,7 @@ const ResultsForm = () => {
   
   // gestion des erreurs de chargement des données
   useEffect(() => {
-    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+    if (isError) setAlerte({ severite: "error", message: manageError(error) });
   }, [isError]);
 
   // mise à jour de l'utilisateur sélectionné

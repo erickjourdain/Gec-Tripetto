@@ -1,22 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useSetAtom, useAtomValue } from "jotai";
 import { sfEqual } from "spring-filter-query-builder";
 import Skeleton from "@mui/material/Skeleton";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Context, User } from "gec-tripetto";
+import { User } from "gec-tripetto";
+import { displayAlert, loggedUser } from "../atomState";
 import { getUsers } from "../utils/apiCall";
-import { useAppContext } from "../utils/appContext";
 import manageError from "../utils/manageError";
 import UpdateForm from "../components/users/UpdateForm";
 import Button from "@mui/material/Button";
 
 const UserForm = () => {
   const navigate = useNavigate();
-  // Chargement des données du Contexte de l'application
-  const { appContext, setAppContext } = useAppContext() as Context;
+  // Chargement de l'état Atom des alertes
+  const setAlerte = useSetAtom(displayAlert);
+  // Chargement de l'état Atom des alertes
+  const currentUser = useAtomValue(loggedUser);
+
   // Récupération des données de la route
   const { slug } = useParams();
 
@@ -35,18 +39,18 @@ const UserForm = () => {
   useEffect(() => {
     if (data) {
       if (data?.data.data.length !== 1)
-        setAppContext({ ...appContext, alerte: { severite: "warning", message: "Erreur lors du chargement de l'utilisateur" } });
-      if (appContext.user?.role === "ADMIN" || data?.data.data[0].id !== appContext.user?.id) {
+        setAlerte({ severite: "warning", message: "Erreur lors du chargement de l'utilisateur" });
+      if (currentUser?.role === "ADMIN" || data?.data.data[0].id !== currentUser?.id) {
         const us = data?.data.data[0] as User;
         setUser(us);
-      } else 
-        setAppContext({ ...appContext, alerte: { severite: "warning", message: "Vous ne disposez pas des droits pour accéder à cette page" } });
+      } else
+        setAlerte({ severite: "warning", message: "Vous ne disposez pas des droits pour accéder à cette page" });
     }
   }, [data]);
 
   // gestion des erreurs de chargement des données
   useEffect(() => {
-    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+    if (isError) setAlerte({ severite: "error", message: manageError(error) } );
   }, [isError]);
 
   const handleUpdate = (newUser: User) => {

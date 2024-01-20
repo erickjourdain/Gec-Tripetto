@@ -1,24 +1,25 @@
-import { Context } from "gec-tripetto";
-import { useAppContext } from "./appContext";
+import { includes } from "lodash";
+import { useAtomValue } from "jotai";
+import { loggedUser } from "../atomState";
 
 const isAdmin = () => {
-  const { appContext } = useAppContext() as Context;
-  return appContext.user?.role === "ADMIN";
+  const user = useAtomValue(loggedUser);
+  return user?.role === "ADMIN";
 }
 
 const isCreator = () => {
-  const { appContext } = useAppContext() as Context;
-  return appContext.user?.role === "ADMIN" || appContext.user?.role === "CREATOR";
+  const user = useAtomValue(loggedUser);
+  return includes(["ADMIN", "CREATOR"], user?.role);
 }
 
 const isContributor = () => {
-  const { appContext } = useAppContext() as Context;
-  return appContext.user?.role === "ADMIN" || appContext.user?.role === "CREATOR" || appContext.user?.role === "CONTRIBUTOR";
+  const user = useAtomValue(loggedUser);
+  return includes(["ADMIN", "CREATOR", "CONTRIBUTOR"], user?.role);
 };
 
 const isLogged = () => {
-  const { appContext } = useAppContext() as Context;
-  return !appContext.user
+  const user = useAtomValue(loggedUser);
+  return !user
 }
 
 export { isAdmin, isCreator, isContributor, isLogged };

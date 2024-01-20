@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
@@ -13,9 +14,9 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { Context, Role, User } from "gec-tripetto";
+import { Role, User } from "gec-tripetto";
+import { displayAlert } from "../../atomState";
 import { updateUser } from "../../utils/apiCall";
-import { useAppContext } from "../../utils/appContext";
 import manageError from "../../utils/manageError";
 
 type IFormInputs = {
@@ -34,7 +35,8 @@ type UpdateFormProps = {
 
 const UpdateForm = ({ user, onUpdated }: UpdateFormProps) => {
   const roles = ["ADMIN", "CREATOR", "USER", "READER"];
-  const { appContext, setAppContext } = useAppContext() as Context;
+  // Chargement de l'état Atom des alertes
+  const setAlerte = useSetAtom(displayAlert);
 
   // Définition des éléments pour la validation du formulaire
   const {
@@ -68,11 +70,11 @@ const UpdateForm = ({ user, onUpdated }: UpdateFormProps) => {
   const { mutate, isPending } = useMutation({
     mutationFn: updateUser,
     onSuccess: (rep: AxiosResponse) => {
-      setAppContext({ ...appContext, alerte: { severite: "success", message: "Les données ont été mises à jour" } });
+      setAlerte({ severite: "success", message: "Les données ont été mises à jour" } );
       onUpdated(rep.data);
     },
     onError: (error: Error) => {
-      setAppContext({ ...appContext, alerte: { severite: "danger", message: manageError(error) } });
+      setAlerte({ severite: "danger", message: manageError(error) } );
     },
   });
 

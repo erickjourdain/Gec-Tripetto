@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useSetAtom } from "jotai";
 import { Export, Instance } from "@tripetto/runner";
 import { useMutation } from "@tanstack/react-query";
-import { Context } from "gec-tripetto";
+import { displayAlert } from "../atomState";
 import { saveAnswer } from "../utils/apiCall";
 import manageError from "../utils/manageError";
-import { useAppContext } from "../utils/appContext";
 import { useFormulaire } from "../pages/IndexForm";
 import PlayTripetto from "./PlayTripetto";
 
@@ -15,8 +15,8 @@ type PlayFormProps = {
 
 const PlayForm = ({ open }: PlayFormProps) => {
   const navigate = useNavigate();
-  // Chargement des données du Contexte de l'application
-  const { appContext, setAppContext } = useAppContext() as Context;
+  // Chargement de l'état Atom des alertes
+  const setAlerte = useSetAtom(displayAlert);
 
   // récupération du formulaire de qualification
   const { form } = useFormulaire();
@@ -43,11 +43,11 @@ const PlayForm = ({ open }: PlayFormProps) => {
   const { mutate } = useMutation({
     mutationFn: saveAnswer,
     onSuccess: () => {
-      setAppContext({...appContext, alerte: { severite: "success", message: "Les données ont été sauvegardées" }});
+      setAlerte({ severite: "success", message: "Les données ont été sauvegardées" });
       navigate({ pathname: "../answers" });
     },
     onError: (error: Error) => {
-      setAppContext({...appContext, alerte: { severite: "danger", message: manageError(error) }});
+      setAlerte({ severite: "danger", message: manageError(error) });
     },
   });
 

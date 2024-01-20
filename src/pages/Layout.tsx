@@ -1,14 +1,14 @@
 import { Navigate, Outlet, useBlocker } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useAtom, useSetAtom } from "jotai";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
 import { Typography } from "@mui/material";
-import { Context } from "gec-tripetto";
+import { changement, loggedUser } from "../atomState";
 import { getCurrentUser } from "../utils/apiCall";
-import { useAppContext } from "../utils/appContext";
 import Menu from "../components/Menu";
 import Sidebar from "../components/Sidebar";
 import MessageInfo from "../components/MessageInfo";
@@ -29,9 +29,9 @@ const MainBox = styled(Box, {})(() => ({
 }))
 
 const Layout = () => {
-  // Chargement des données du Contexte de l'application
-  const { appContext, setAppContext } = useAppContext() as Context;
 
+  const setUser = useSetAtom(loggedUser);
+  const [notSaved, setNotSaved] =  useAtom(changement);
   // Création état local pour affichage du menu latéral
   const [open, setOpen] = useState<boolean>(true);
   // Création état local pour affichage boite dialogue de confirmation de changement de page
@@ -52,7 +52,7 @@ const Layout = () => {
   });
 
   let blocker = useBlocker(() => {
-    if (appContext.changement) {
+    if (notSaved) {
       setQuitDialog(true);
       return true;
     } else return false;
@@ -61,10 +61,7 @@ const Layout = () => {
   // Enregistrement des données utilisateurs dans le contexte de l'application
   useEffect(() => {
     if (isSuccess) {
-      setAppContext({
-        ...appContext,
-        user: userData.data,
-      });
+      setUser(userData.data);
     }
   }, [userData]);
 
@@ -81,7 +78,7 @@ const Layout = () => {
    setQuitDialog(false);
    if (val) {
      if (blocker.state === "blocked") {
-      setAppContext({...appContext, changement: false});
+      setNotSaved(false);
       blocker.proceed();
      }
    } else blocker.state === "unblocked";

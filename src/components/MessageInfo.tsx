@@ -1,32 +1,31 @@
+import { useEffect, useState } from "react";
+import { useAtomValue } from "jotai";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
-import { useEffect, useState } from "react";
-import { Context } from "gec-tripetto";
-import { useAppContext } from "../utils/appContext";
+import { displayAlert } from "../atomState";
 
 
 const MessageInfo = () => {
-  // Chargement des données du Contexte de l'application
-  const { appContext } = useAppContext() as Context;
+  // Chargement de l'état Atom des alertes
+  const alerte = useAtomValue(displayAlert);
   
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
-    if (appContext.alerte) setOpen(true);
-  }, [appContext]);
+    if (alerte) setOpen(true);
+  }, [alerte]);
 
   const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
-
     setOpen(false);
   };
 
-  return ( appContext.alerte &&
+  return ( alerte &&
     <Snackbar open={open} autoHideDuration={2000} onClose={handleClose} anchorOrigin={{horizontal: "center", vertical: "top"}}>
-      <Alert onClose={handleClose} severity={appContext.alerte.severite} sx={{ width: "100%" }} >
-        {appContext.alerte.message}
+      <Alert onClose={handleClose} severity={alerte.severite} sx={{ width: "100%" }} >
+        {alerte.message}
       </Alert>
     </Snackbar>
   );

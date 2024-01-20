@@ -1,5 +1,7 @@
 declare module "gec-tripetto" {
 
+  export { Info } from "./types/info";
+  
   export { AnswerAPI } from "./types/answerAPIAnser";
 
   export { AnswersAPI } from "./types/answersAPI";
@@ -7,8 +9,6 @@ declare module "gec-tripetto" {
   export { AnwserUpdate } from "./types/answerUpdate";
 
   export { ChildrenProps } from "./types/childrenProps";
-
-  export { Context, ContextType, AppContextType, SetContextType } from "./types/context";
 
   export { Form } from "./types/form";
 
@@ -23,6 +23,8 @@ declare module "gec-tripetto" {
   export { LockAPI } from "./types/lockAPI";
 
   export { Role, User } from "./types/user";
+
+  export {Runner} from "./types/runner";
 
   export { UserCreation } from "./types/userCreation";
 }

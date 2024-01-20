@@ -3,6 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { AxiosResponse } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { Export, Instance } from "@tripetto/runner";
+import { useSetAtom } from "jotai";
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
@@ -15,8 +16,8 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Alert from "@mui/material/Alert";
 import ChangeCircleOutlinedIcon from "@mui/icons-material/ChangeCircleOutlined";
-import { AnswerAPI, AnwserUpdate, Context } from "gec-tripetto";
-import { useAppContext } from "../../utils/appContext";
+import { AnswerAPI, AnwserUpdate } from "gec-tripetto";
+import { displayAlert, changement } from "../../atomState";
 import { updateAnswer } from "../../utils/apiCall";
 import { formatDateTime } from "../../utils/format";
 import { isContributor } from "../../utils/auth";
@@ -45,8 +46,9 @@ interface UpdateFormProps {
 const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) => {
   const statuts = ["BROUILLON", "QUALIFICATION", "DEVIS", "GAGNE", "PERDU", "TERMINE"];
 
-  // Chargement des données du Contexte de l'application
-  const { appContext, setAppContext } = useAppContext() as Context;
+  // Chargement de l'état Atom des alertes et de la sauvegarde des données
+  const setAlerte = useSetAtom(displayAlert);
+  const setNotSaved = useSetAtom(changement);
 
   const [reponses, setReponses] = useState<string[]>([]);
   const [dialog, setDialog] = useState<boolean>(false);
@@ -55,14 +57,14 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
   const { mutate, isPending } = useMutation({
     mutationFn: updateAnswer,
     onSuccess: (rep: AxiosResponse) => {
-      setAppContext({ ...appContext, changement: false });
+      setNotSaved(false);
       setTimeout(() => {
-        setAppContext({ ...appContext, alerte: { severite: "success", message: "les modifications ont été enregsitrées" }});
+        setAlerte({ severite: "success", message: "les modifications ont été enregsitrées" });
         onUpdated(rep.data);
       }, 500);
     },
     onError(error) {
-      setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+      setAlerte({ severite: "error", message: manageError(error) } );
     },
   });
 
@@ -102,11 +104,11 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
       });
     }
     setReponses([answer.reponse]);
-    setAppContext({ ...appContext, changement: false });
+    setNotSaved(false);
   }, [answer]);
   useEffect(() => {
     const sucbscription = watch(() => {
-      setAppContext({ ...appContext, changement: isChanged() });
+      setNotSaved(isChanged());
     });
     return () => sucbscription.unsubscribe();
   }, [watch])

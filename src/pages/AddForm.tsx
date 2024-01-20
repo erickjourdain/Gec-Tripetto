@@ -2,13 +2,14 @@ import { isEmpty } from "lodash";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Context, FormCreation } from "gec-tripetto";
+import { FormCreation } from "gec-tripetto";
+import { displayAlert } from "../atomState";
 import { createForm } from "../utils/apiCall";
 import manageError from "../utils/manageError";
-import { useAppContext } from "../utils/appContext";
 import FormInputs from "../components/FormInputs";
 import PlayTripetto from "../components/PlayTripetto";
 
@@ -18,8 +19,8 @@ import PlayTripetto from "../components/PlayTripetto";
  */
 const AddForm = () => {
   const navigate = useNavigate();
-  // Chargement des données du Contexte de l'application
-  const { appContext, setAppContext } = useAppContext() as Context;
+  // Chargement de l'état Atom des alertes
+  const setAlerte = useSetAtom(displayAlert);
 
   // définition de l'état du composant pour gestion de la MAJ des données
   // du formulaire Tripetto
@@ -30,11 +31,11 @@ const AddForm = () => {
   const { mutate } = useMutation({
     mutationFn: createForm,
     onSuccess: (response) => {
-      setAppContext({...appContext, alerte: { severite: "success", message: "Les données ont été sauvegardées" }});
+      setAlerte({ severite: "success", message: "Les données ont été sauvegardées" });
       navigate(`/formulaire/${response.data.slug}`);
     },
     onError: (error: Error) => {
-      setAppContext({...appContext, alerte: { severite: "danger", message: manageError(error) }});
+      setAlerte({ severite: "danger", message: manageError(error) });
     },
   });
 

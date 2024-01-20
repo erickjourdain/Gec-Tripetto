@@ -1,13 +1,14 @@
 import { isEmpty } from "lodash";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import { sfLike, sfOr } from "spring-filter-query-builder";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { Context, User } from "gec-tripetto";
+import { User } from "gec-tripetto";
+import { displayAlert } from "../atomState";
 import { getUsers } from "../utils/apiCall";
-import { useAppContext } from "../utils/appContext";
 import manageError from "../utils/manageError";
 
 // définition du type pour les Props du composant
@@ -20,7 +21,7 @@ type SearchUserProps = {
  * @returns JSX
  */
 const SearchUser = ({ onUserChange }: SearchUserProps) => {
-  const { appContext, setAppContext } = useAppContext() as Context;
+  const setAlerte = useSetAtom(displayAlert);
   
   const [value, setValue] = useState<User | null>(null);
   const [search, setSearch] = useState<string | null>(null);
@@ -48,7 +49,7 @@ const SearchUser = ({ onUserChange }: SearchUserProps) => {
 
   // gestion des erreurs de chargement des données
   useEffect(() => {
-    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+    if (isError) setAlerte({ severite: "error", message: manageError(error) });
   }, [isError]);
 
   return (
