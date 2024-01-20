@@ -30,7 +30,6 @@ const TableReponse = ({ form, reponses }: TableReponseProps) => {
       answers.push(formTripettoAnswers(form, JSON.parse(reponses[index])));
     }
     setFormAnswers(answers);
-    console.log(answers);
   }, [reponses]);
 
   // Gestion du changement de page du tableau de résultat

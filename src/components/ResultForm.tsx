@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Skeleton from "@mui/material/Skeleton";;
 import Button from "@mui/material/Button";
-import { FormAnswers, Context } from "gec-tripetto";
+import { displayAlert } from "atomState";
+import { FormAnswers } from "gec-tripetto";
 import { getAnswer } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 import { formTripettoAnswers, formatDateTime } from "../utils/format";
 import { useFormulaire } from "../pages/IndexForm"
-import { useAppContext } from "utils/appContext";
 import ResultsTable from "./ResultsTable";
 import PlayTripetto from "./PlayTripetto";
 
@@ -26,7 +27,7 @@ type Workflow = "termine" | "modification";
  * @returns JSX
  */
 const ResultForm = ({ answer }: ResultFormProps) => {
-  const { appContext, setAppContext } = useAppContext() as Context;
+  const setAlerte = useSetAtom(displayAlert);
 
   // récupération du formulaire de qualification
   const { form } = useFormulaire();
@@ -56,7 +57,7 @@ const ResultForm = ({ answer }: ResultFormProps) => {
   }, [reponse]);
   // gestion des erreurs de chargement des données
   useEffect(() => {
-    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+    if (isError) setAlerte({ severite: "error", message: manageError(error) });
   }, [isError]);
 
   // Affichage lors du chargement des données

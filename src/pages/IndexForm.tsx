@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useOutletContext, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import Skeleton from "@mui/material/Skeleton";
-import { Context, Form } from "gec-tripetto";
-import { useAppContext } from "../utils/appContext";
+import { Form } from "gec-tripetto";
+import { displayAlert } from "../atomState";
 import { getForm } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 import CardForm from "../components/CardForm";
@@ -19,8 +20,9 @@ type ContextType = {
  * @returns JSX
  */
 const IndexForm = () => {
-  const { appContext, setAppContext } = useAppContext() as Context;
-  
+  // Chargement de l'état Atom des alertes
+  const setAlerte = useSetAtom(displayAlert);
+
   const [form, setForm] = useState<Form | null>(null);
 
   const { slug } = useParams();
@@ -43,7 +45,7 @@ const IndexForm = () => {
     if (formData)
       switch (formData.data.nombreFormulaires) {
         case 0:
-          setAppContext({ ...appContext, alerte: { severite: "warning", message: "Aucun formulaire trouvé" } });
+          setAlerte({ severite: "warning", message: "Aucun formulaire trouvé" });
           break;
         case 1:
           setForm({
@@ -59,7 +61,7 @@ const IndexForm = () => {
   }, [formData]);
   // gestion des erreurs de chargement des données
   useEffect(() => {
-    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+    if (isError) setAlerte({ severite: "error", message: manageError(error) });
   }, [isError]);
 
   // Affichage lors du chargement des données
@@ -77,7 +79,7 @@ const IndexForm = () => {
   if (form)
     return (
       <div>
-        <CardForm form={form} onAction={(statut: string) => navigate({ pathname: statut})} />
+        <CardForm form={form} onAction={(statut: string) => navigate({ pathname: statut })} />
         {formData && <Outlet context={{ form, setForm } satisfies ContextType} />}
       </div>
     );

@@ -1,9 +1,6 @@
 import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-import { Context } from "gec-tripetto";
-import { useAppContext } from "./utils/appContext";
 import { setAuthorisation } from "./utils/apiCall";
 import { isAdmin, isCreator } from "./utils/auth";
 import Layout from "./pages/Layout";
@@ -26,8 +23,7 @@ import CloseApp from "./pages/CloseApp";
 const queryClient = new QueryClient({});
 
 function App() {
-  // Chargement des données du Contexte de l'application
-  const { appContext } = useAppContext() as Context;
+
   // Chargement du token de connexion à l'API
   // récupération du token stocké dans le navigateur
   const token = localStorage.getItem("token");

@@ -1,5 +1,6 @@
 import { useState, MouseEvent } from "react";
 import { useNavigate } from "react-router";
+import { useAtom } from "jotai";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import IconButton from "@mui/material/IconButton";
@@ -7,16 +8,15 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { Context } from "gec-tripetto";
-import { useAppContext } from "../utils/appContext";
+import { selectedRunner } from "../atomState";
 import { isAdmin } from "../utils/auth";
 
 
 const options = ["Classic", "Autoscroll", "Chat"];
 
 const Settings = () => {
-  // récupération du contexte de l'application
-  const { appContext, setAppContext } = useAppContext() as Context;
+  // Chargement de l'état Atom du runner
+  const [tripettoRunner, setTripettoRunner] = useAtom(selectedRunner);
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -26,10 +26,7 @@ const Settings = () => {
   };
 
   const handleClick = (i: number) => {
-    setAppContext({
-      ...appContext,
-      runner: options[i],
-    });
+    setTripettoRunner(options[i]);
     handleClose();
   };
 
@@ -39,7 +36,7 @@ const Settings = () => {
 
   return (
     <Box sx={{ display: { xs: "none", sm: "block" } }}>
-      {appContext.runner}
+      {tripettoRunner}
       <IconButton
         size="large"
         aria-label="paramètres"

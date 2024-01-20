@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { QueryClient, useQuery } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import { sfEqual } from "spring-filter-query-builder";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
@@ -8,10 +9,9 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { Context } from "gec-tripetto";
+import { displayAlert } from "../../atomState";
 import { getAnswers } from "../../utils/apiCall";
 import manageError from "../../utils/manageError";
-import { useAppContext } from "../../utils/appContext";
 
 interface Version {
   id: number;
@@ -25,9 +25,9 @@ interface VersionsProps {
 }
 
 const Versions = ({ version, onVersionChange }: VersionsProps) => {
-  // Chargement des données du Contexte de l'application
-  const { appContext, setAppContext } = useAppContext() as Context;
-  
+  // Chargement de l'état Atom des alertes
+  const setAlerte = useSetAtom(displayAlert);
+
   // récupération du paramètre de la page: identifiant de la série de réponses
   const { uuid } = useParams();
 
@@ -56,10 +56,10 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
       const queryClient = new QueryClient();
       queryClient.removeQueries({ queryKey: ["getAnswersVersion"] });
     }
-  },[]);
+  }, []);
   // gestion des erreurs de chargement des données
   useEffect(() => {
-    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+    if (isError) setAlerte({ severite: "error", message: manageError(error) });
   }, [isError]);
 
   if (isLoading)
@@ -71,24 +71,24 @@ const Versions = ({ version, onVersionChange }: VersionsProps) => {
 
   if (isSuccess && versions.length > 0)
     return (
-        <FormControl sx={{ minWidth: 100, pr: 1 }} size="small">
-          <InputLabel id="reponse-versions-select-label">Version</InputLabel>
-          <Select
-            labelId="reponse-versions-select-label"
-            id="reponse-versions-select"
-            value={version}
-            label="Version"
-            onChange={(evt: SelectChangeEvent) => {
-              onVersionChange(evt.target.value);
-            }}
-          >
-            {versions.map((ver) => (
-              <MenuItem value={ver.version} key={ver.id}>
-                {ver.version}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <FormControl sx={{ minWidth: 100, pr: 1 }} size="small">
+        <InputLabel id="reponse-versions-select-label">Version</InputLabel>
+        <Select
+          labelId="reponse-versions-select-label"
+          id="reponse-versions-select"
+          value={version}
+          label="Version"
+          onChange={(evt: SelectChangeEvent) => {
+            onVersionChange(evt.target.value);
+          }}
+        >
+          {versions.map((ver) => (
+            <MenuItem value={ver.version} key={ver.id}>
+              {ver.version}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     );
 };
 

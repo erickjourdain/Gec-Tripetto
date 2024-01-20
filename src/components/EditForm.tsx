@@ -1,13 +1,13 @@
 import { isEmpty } from "lodash";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useSetAtom } from "jotai";
 import { useMutation } from "@tanstack/react-query";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import { Context } from "gec-tripetto";
+import { displayAlert } from "../atomState";
 import { updateForm } from "../utils/apiCall";
 import manageError from "../utils/manageError";
-import { useAppContext } from "../utils/appContext";
 import { useFormulaire } from "../pages/IndexForm";
 import PlayTripetto from "./PlayTripetto";
 import FormInputs from "./FormInputs";
@@ -29,8 +29,8 @@ type State = {
 //const EditForm = ({ onFinish }: EditFormProps) => {
 const EditForm = () => {
   const navigate = useNavigate();
-  // Chargement des données du Contexte de l'application
-  const { appContext, setAppContext } = useAppContext() as Context;
+  // Chargement de l'état Atom des alertes
+  const setAlerte = useSetAtom(displayAlert);
 
   // récupération du formulaire à mettre à jour via le contexte de la route
   const { form, setForm } = useFormulaire();
@@ -45,7 +45,7 @@ const EditForm = () => {
   const { mutate } = useMutation({
     mutationFn: updateForm,
     onSuccess: (response) => {
-      setAppContext({...appContext, alerte: { severite: "success", message: "Les données ont été mises à jour" }});
+      setAlerte({ severite: "success", message: "Les données ont été mises à jour" });
       if (form && form.slug !== response.data.slug) {
         navigate(`/formulaire/${response.data.slug}`);
       } else {
@@ -57,7 +57,7 @@ const EditForm = () => {
       }
     },
     onError: (error: Error) => {
-      setAppContext({...appContext, alerte: { severite: "danger", message: manageError(error) }});
+      setAlerte({ severite: "danger", message: manageError(error) });
     },
   });
 

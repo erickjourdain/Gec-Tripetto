@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import Skeleton from "@mui/material/Skeleton";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -14,15 +15,16 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Typography from "@mui/material/Typography";
 import TableHead from "@mui/material/TableHead";
-import { Context, User } from "gec-tripetto";
+import { User } from "gec-tripetto";
+import { displayAlert } from "../atomState";
 import { getUsers } from "../utils/apiCall";
-import { useAppContext } from "../utils/appContext";
 import manageError from "../utils/manageError";
 
 const Admin = () => {
   const itemsPerPage = 5;
-  
-  const { appContext, setAppContext } = useAppContext() as Context;
+
+  // Chargement de l'état Atom des alertes
+  const setAlerte = useSetAtom(displayAlert);
   const navigate = useNavigate();
 
   // State: page du tableau
@@ -45,7 +47,7 @@ const Admin = () => {
 
   // gestion des erreurs de chargement des données
   useEffect(() => {
-    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+    if (isError) setAlerte({ severite: "error", message: manageError(error) });
   }, [isError]);
 
   // Gestion du changement de page du tableau de résultat
@@ -54,7 +56,7 @@ const Admin = () => {
   };
 
   const icon = (val: boolean) => {
-    return (val) ? <CheckBoxIcon/> : <CheckBoxOutlineBlankIcon/>
+    return (val) ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />
   }
 
   if (isLoading)
@@ -93,7 +95,7 @@ const Admin = () => {
               {users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
-                    <VisibilityIcon sx={{ cursor: "pointer" }} onClick={() => navigate({ pathname: `user/${user.slug}`})} />
+                    <VisibilityIcon sx={{ cursor: "pointer" }} onClick={() => navigate({ pathname: `user/${user.slug}` })} />
                   </TableCell>
                   <TableCell>{`${user.prenom} ${user.nom}`}</TableCell>
                   <TableCell>{user.role}</TableCell>

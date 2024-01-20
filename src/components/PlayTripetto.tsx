@@ -1,3 +1,5 @@
+
+import { useAtom } from "jotai";
 import { Export, IDefinition, Import, Instance } from "@tripetto/runner";
 import { ChatRunner } from "@tripetto/runner-chat";
 import { AutoscrollRunner } from "@tripetto/runner-autoscroll";
@@ -9,14 +11,13 @@ import translationClassic from "@tripetto/runner-classic/runner/translations/fr.
 import translationChat from "@tripetto/runner-chat/runner/translations/fr.json";
 import translationAutoScroll from "@tripetto/runner-autoscroll/runner/translations/fr.json";
 import { ILocale, TTranslation } from "@tripetto/runner/module/l10n";
+import { selectedRunner } from "../atomState";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import { Context } from "gec-tripetto";
-import { useAppContext } from "../utils/appContext";
 
 
 type TripettoProps = {
@@ -30,8 +31,8 @@ type TripettoProps = {
 const PlayTripetto = ({ open, onClose, form, data, onSubmit }: TripettoProps) => {
   let runner: JSX.Element;
 
-  // récupération du contexte de l'application
-  const { appContext } = useAppContext() as Context;
+  // Chargement de l'état Atom du runner
+  const [tripettoRunner] = useAtom(selectedRunner);
 
   const onImport = (instance: Instance) => {
     const values: Import.IFieldByName[] = [];
@@ -46,7 +47,7 @@ const PlayTripetto = ({ open, onClose, form, data, onSubmit }: TripettoProps) =>
   };
 
   // choix du type de formulaire
-  switch (appContext.runner) {
+  switch (tripettoRunner) {
     case "Chat":
       runner = (
         <ChatRunner

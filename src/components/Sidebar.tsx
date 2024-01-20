@@ -1,6 +1,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useAtom } from "jotai";
 import { styled } from "@mui/material/styles";
 import MuiDrawer, { DrawerProps as MuiDrawerProps } from "@mui/material/Drawer";
 import Divider from "@mui/material/Divider";
@@ -15,11 +16,11 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import { Context, Form } from "gec-tripetto";
+import { Form } from "gec-tripetto";
+import { displayAlert } from "../atomState";
 import { getForms } from "../utils/apiCall";
 import manageError from "../utils/manageError";
 import { isCreator } from "../utils/auth";
-import { useAppContext } from "../utils/appContext";
 import Search from "./Search";
 
 // Définition du type des "props" attendus par le composant
@@ -75,7 +76,7 @@ const Drawer = styled(MuiDrawer, {
  * @returns JSX
  */
 const Sidebar = ({ open, drawerwidth, onToggleDrawer }: SidebarProps) => {
-  const { appContext, setAppContext } = useAppContext() as Context;
+  const [alerte, setAlerte] = useAtom(displayAlert);
   
   // hook de navigation
   const navigate = useNavigate();
@@ -101,7 +102,7 @@ const Sidebar = ({ open, drawerwidth, onToggleDrawer }: SidebarProps) => {
 
   // gestion des erreurs de chargement des données
   useEffect(() => {
-    if (isError) setAppContext({ ...appContext, alerte: { severite: "error", message: manageError(error) } });
+    if (error) setAlerte({ severite: "error", message: manageError(error) });
   }, [isError]);
   // naviguation vers la page d'ajout d'un formulaire
   const addForm = () => {
