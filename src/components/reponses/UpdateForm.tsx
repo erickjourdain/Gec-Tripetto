@@ -20,7 +20,7 @@ import { AnswerAPI, AnwserUpdate } from "gec-tripetto";
 import { displayAlert, changement } from "../../atomState";
 import { updateAnswer } from "../../utils/apiCall";
 import { formatDateTime } from "../../utils/format";
-import { isContributor } from "../../utils/auth";
+import { isUser } from "../../utils/auth";
 import manageError from "../../utils/manageError";
 import TableReponse from "../TableReponse";
 import PlayTripetto from "../PlayTripetto";
@@ -176,7 +176,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
                       id="statut-select"
                       labelId="statut-select-label"
                       label="statut"
-                      disabled={!courante || !isContributor() || locked}
+                      disabled={!courante || !isUser() || locked}
                       {...field}
                     >
                       {statuts.map((st) => (
@@ -196,7 +196,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
             InputProps={{
               startAdornment: <InputAdornment position="start">DEM</InputAdornment>,
             }}
-            disabled={!courante || !isContributor() || locked}
+            disabled={!courante || !isUser() || locked}
             {...register("demande", { pattern: { value: /^[0-9]{7,7}$/g, message: "La demande doit comporter 7 chiffres" } })}
             error={errors.demande ? true : false}
           />
@@ -206,7 +206,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
             InputProps={{
               startAdornment: <InputAdornment position="start">OPP</InputAdornment>,
             }}
-            disabled={!courante || !isContributor() || locked}
+            disabled={!courante || !isUser() || locked}
             {...register("opportunite", { pattern: { value: /^[0-9]{7,7}$/g, message: "L'opportunité doit comporter 7 chiffres" } })}
             error={errors.opportunite ? true : false}
           />
@@ -220,7 +220,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
             {errors.opportunite?.message}
           </Typography>
         </Box>
-        {(courante || isContributor()) && !locked && (
+        {(courante || isUser()) && !locked && (
           <Box>
             <Button
               disabled={!answer?.courante || dialog}
@@ -245,7 +245,7 @@ const UpdateForm = ({ courante, locked, answer, onUpdated }: UpdateFormProps) =>
             onSubmit={handleTrippetoChange}
           />
         </div>
-        {(courante || isContributor()) && !locked && (
+        {(courante || isUser()) && !locked && (
           <Box mt={3}>
             <Stack spacing={2} direction="row">
               <Button variant="contained" color="primary" disabled={!isValid || !isChanged() || isPending} onClick={handleSubmit}>

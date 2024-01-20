@@ -12,9 +12,9 @@ const isCreator = () => {
   return includes(["ADMIN", "CREATOR"], user?.role);
 }
 
-const isContributor = () => {
+const isUser = () => {
   const user = useAtomValue(loggedUser);
-  return includes(["ADMIN", "CREATOR", "CONTRIBUTOR"], user?.role);
+  return includes(["ADMIN", "CREATOR", "USER"], user?.role);
 };
 
 const isLogged = () => {
@@ -22,4 +22,4 @@ const isLogged = () => {
   return !user
 }
 
-export { isAdmin, isCreator, isContributor, isLogged };
+export { isAdmin, isCreator, isUser, isLogged };
